@@ -23,6 +23,11 @@ export type Services = {
   imageProxy: Service.Proxy;
 };
 
+export type Connectors = {
+  image: Connector.Image;
+  file: Connector.File;
+};
+
 export interface FileFetcher {
   getRemoteAsBuffer(url: string): Promise<Buffer>;
 }

@@ -18,12 +18,9 @@ export function serveStaticFile<T>(
 
     try {
       const { mime, content } = await fn(params);
-      // res.setHeader('Content-Disposition', `attachment; filename=panda.pdf`);
-      // res.setHeader('Content-Transfer-Encoding', 'binary');
       res.setHeader('Content-Type', mime);
       res.send(content);
     } catch (e) {
-      // console.error(e);
       res.status(404).end('Not found');
     }
   };

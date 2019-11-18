@@ -7,10 +7,11 @@ import { Image } from '~entities/Image';
 import { ImageProxy } from '~services/Proxy';
 
 import { setupImagesRoute } from './routes/images';
-import { RemoteFileConnector } from '~connectors/File';
-import { AxiosFileFetcher } from '~common/FileFetcher';
 
 import { Config } from '~config';
+import { setupConnectors } from './connectors/index';
+import { setupServices } from './services/index';
+import { AxiosFileFetcher } from '~common/FileFetcher';
 
 (async (): Promise<void> => {
   const connection = await createConnection();
@@ -20,20 +21,11 @@ import { Config } from '~config';
     console.timeEnd('Synchronizing DB schema');
   }
 
-  const imageConnector = new ImagePgConnector({
-    repository: getRepository(Image),
-  });
-
-  const fileConnector = new RemoteFileConnector({
+  const connectors = setupConnectors({
     fileFetcher: new AxiosFileFetcher(),
   });
 
-  const services = {
-    imageProxy: new ImageProxy({
-      imageConnector,
-      fileConnector,
-    }),
-  };
+  const services = setupServices({ connectors });
 
   const app = express();
   const imagesRouter = setupImagesRoute(express.Router(), services);
