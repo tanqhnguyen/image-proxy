@@ -4,7 +4,8 @@
     "paths": {
       "~types": ["./src/types"],
       "~entities/*": ["./src/entities/*"],
-      "~connectors/*": ["./src/connectors/*"]
+      "~connectors/*": ["./src/connectors/*"],
+      "~common/*": ["./src/common/*"]
     },
 
     "target": "es6",
