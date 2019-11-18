@@ -35,6 +35,6 @@ export class AxiosFileFetcher implements FileFetcher {
       throw new Error(res.statusText);
     }
 
-    return new Buffer(res.data, 'binary');
+    return Buffer.from(res.data, 'binary');
   }
 }
