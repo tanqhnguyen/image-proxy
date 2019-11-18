@@ -10,6 +10,8 @@ import { setupImagesRoute } from './routes/images';
 import { RemoteFileConnector } from '~connectors/File';
 import { AxiosFileFetcher } from '~common/FileFetcher';
 
+import { Config } from '~config';
+
 (async (): Promise<void> => {
   const connection = await createConnection();
   await connection.synchronize();
@@ -34,7 +36,7 @@ import { AxiosFileFetcher } from '~common/FileFetcher';
 
   app.use('/images', imagesRouter);
 
-  app.listen(3000, () => {
-    console.log('Started!');
+  app.listen(`0.0.0.0:${Config.api.port}`, () => {
+    console.log(`Started API at port ${Config.api.port}`);
   });
 })();

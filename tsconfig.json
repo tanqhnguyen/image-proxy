@@ -7,7 +7,8 @@
       "~connectors/*": ["./src/connectors/*"],
       "~services/*": ["./src/services/*"],
       "~routes/*": ["./src/routes/*"],
-      "~common/*": ["./src/common/*"]
+      "~common/*": ["./src/common/*"],
+      "~config": ["./src/config"]
     },
 
     "target": "es6",
