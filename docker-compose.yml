@@ -1,0 +1,15 @@
+# development only
+version: '3.5'
+services:
+  postgres:
+    image: postgres:10
+    ports:
+      - ${TYPEORM_PORT}:5432
+    environment:
+      - POSTGRES_PASSWORD=${TYPEORM_PASSWORD}
+      - POSTGRES_DB=${TYPEORM_DATABASE}
+      - POSTGRES_USER=${TYPEORM_USERNAME}
+
+networks:
+  default:
+    name: image_proxy
