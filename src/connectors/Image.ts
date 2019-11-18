@@ -53,13 +53,10 @@ export class ImagePgConnector implements Connector.Image {
     return row;
   }
 
-  async getIdByUrl(url: string, query?: object): Promise<string | null> {
-    const image = await this.repository.findOne(
-      this.constructId(normalizeUrl(url, query)),
-      {
-        select: ['id'],
-      },
-    );
+  async getIdByUrl(url: string): Promise<string | null> {
+    const image = await this.repository.findOne(this.constructId(url), {
+      select: ['id'],
+    });
 
     return image ? image.id : null;
   }

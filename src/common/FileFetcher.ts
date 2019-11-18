@@ -28,10 +28,8 @@ export class AxiosFileFetcher implements FileFetcher {
     });
   }
 
-  async getRemoteAsBuffer(url: string, query?: object): Promise<Buffer> {
-    const res = await this.axios.get(url, {
-      params: query || {},
-    });
+  async getRemoteAsBuffer(url: string): Promise<Buffer> {
+    const res = await this.axios.get(url);
 
     if (res.status > 400) {
       throw new Error(res.statusText);

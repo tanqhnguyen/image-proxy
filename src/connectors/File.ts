@@ -11,7 +11,7 @@ export class RemoteFileConnector implements Connector.File {
     Object.assign(this, params);
   }
 
-  getRemote(url: string, query?: object): Promise<Buffer> {
+  getRemote(url: string): Promise<Buffer> {
     return this.fileFetcher.getRemoteAsBuffer(url);
   }
 }
