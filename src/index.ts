@@ -14,7 +14,11 @@ import { Config } from '~config';
 
 (async (): Promise<void> => {
   const connection = await createConnection();
-  await connection.synchronize();
+  if (!Config.isProduction()) {
+    console.time('Synchronizing DB schema');
+    await connection.synchronize();
+    console.timeEnd('Synchronizing DB schema');
+  }
 
   const imageConnector = new ImagePgConnector({
     repository: getRepository(Image),
@@ -36,7 +40,7 @@ import { Config } from '~config';
 
   app.use('/images', imagesRouter);
 
-  app.listen(`0.0.0.0:${Config.api.port}`, () => {
-    console.log(`Started API at port ${Config.api.port}`);
+  app.listen(Config.api.port, '0.0.0.0', () => {
+    console.log(`API is running at port ${Config.api.port}`);
   });
 })();
