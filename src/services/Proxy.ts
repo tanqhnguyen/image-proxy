@@ -1,5 +1,6 @@
 import { Service, BackgroundJob, Connector } from '~types';
-import { normalizeUrl } from '../common/Url';
+import { normalizeUrl } from '~common/Url';
+import { Image } from '~entities/Image';
 
 type Params = {
   importImageBackgroundJob: BackgroundJob<{ url: string; query?: object }>;
@@ -27,5 +28,9 @@ export class ImageProxy implements Service.Proxy {
     }
 
     return `${this.baseUrl}/images/${id}`;
+  }
+
+  getById(id: string): Promise<Image> {
+    return this.imageConnector.getById(id);
   }
 }
