@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "~types": ["./src/types"],
+      "~entities/*": ["./src/entities/*"],
+      "~connectors/*": ["./src/connectors/*"]
+    },
 
     "target": "es6",
     "module": "commonjs",
