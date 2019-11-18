@@ -2,15 +2,15 @@ import { Router } from 'express';
 import { Services } from '~types';
 import { redirectTo, serveStaticFile } from './middlewares';
 
-export function setupImagesRoute(app: Router, services: Services) {
-  app.get(
+export function setupImagesRoute(router: Router, services: Services): Router {
+  router.get(
     '/proxy/:url',
     redirectTo<{ url: string }>(params => {
       return services.imageProxy.getDestination(params.url);
     }),
   );
 
-  app.get(
+  router.get(
     '/:id',
     serveStaticFile<{ id: string }>(async params => {
       const image = await services.imageProxy.getById(params.id);
@@ -25,4 +25,6 @@ export function setupImagesRoute(app: Router, services: Services) {
       };
     }),
   );
+
+  return router;
 }

@@ -5,6 +5,8 @@
       "~types": ["./src/types"],
       "~entities/*": ["./src/entities/*"],
       "~connectors/*": ["./src/connectors/*"],
+      "~services/*": ["./src/services/*"],
+      "~routes/*": ["./src/routes/*"],
       "~common/*": ["./src/common/*"]
     },
 
