@@ -1,17 +1,15 @@
-import { Service, BackgroundJob, Connector } from '~types';
-import { normalizeUrl } from '~common/Url';
+import { Service, Connector } from '~types';
 import { Image } from '~entities/Image';
+import { extractFileExtension } from '~common/Url';
 
 type Params = {
-  importImageBackgroundJob: BackgroundJob<{ url: string }>;
+  fileConnector: Connector.File;
   imageConnector: Connector.Image;
   baseUrl: string;
 };
 
 export class ImageProxy implements Service.Proxy {
-  private importImageBackgroundJob: BackgroundJob<{
-    url: string;
-  }>;
+  private fileConnector: Connector.File;
   private imageConnector: Connector.Image;
   private baseUrl: string;
 
@@ -19,17 +17,21 @@ export class ImageProxy implements Service.Proxy {
     Object.assign(this, params);
   }
 
-  async getDestination(url: string): Promise<string> {
-    const id = await this.imageConnector.getIdByUrl(url);
-    if (!id) {
-      await this.importImageBackgroundJob.schedule({ url });
-      return url;
+  async importFromUrlIfNotExists(url: string): Promise<Image> {
+    const image = await this.imageConnector.getByUrl(url);
+    if (image) {
+      return image;
     }
 
-    return `${this.baseUrl}/images/${id}`;
-  }
+    const content = await this.fileConnector.getRemote(url);
+    const { ext, mime } = extractFileExtension(url);
 
-  getById(id: string): Promise<Image> {
-    return this.imageConnector.getById(id);
+    return this.imageConnector.upsert({
+      url,
+      mime,
+      ext,
+      size: content.byteLength,
+      content,
+    });
   }
 }
