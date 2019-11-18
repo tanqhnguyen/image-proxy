@@ -26,9 +26,9 @@ export class Image {
   @Column({ type: 'bytea', nullable: false })
   content: Buffer;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }
