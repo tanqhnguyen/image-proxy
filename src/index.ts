@@ -10,7 +10,7 @@ import { setupImagesRoute } from './routes/images';
 import { RemoteFileConnector } from '~connectors/File';
 import { AxiosFileFetcher } from '~common/FileFetcher';
 
-(async () => {
+(async (): Promise<void> => {
   const connection = await createConnection();
   await connection.synchronize();
 
@@ -24,7 +24,6 @@ import { AxiosFileFetcher } from '~common/FileFetcher';
 
   const services = {
     imageProxy: new ImageProxy({
-      baseUrl: 'http://localhost/images',
       imageConnector,
       fileConnector,
     }),

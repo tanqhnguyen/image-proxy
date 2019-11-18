@@ -5,13 +5,11 @@ import { extractFileExtension } from '~common/Url';
 type Params = {
   fileConnector: Connector.File;
   imageConnector: Connector.Image;
-  baseUrl: string;
 };
 
 export class ImageProxy implements Service.Proxy {
   private fileConnector: Connector.File;
   private imageConnector: Connector.Image;
-  private baseUrl: string;
 
   constructor(params: Params) {
     Object.assign(this, params);

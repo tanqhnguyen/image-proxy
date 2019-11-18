@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, ResponseType } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
 import { FileFetcher } from '~types';
 
@@ -30,10 +30,6 @@ export class AxiosFileFetcher implements FileFetcher {
 
   async getRemoteAsBuffer(url: string): Promise<Buffer> {
     const res = await this.axios.get(url);
-
-    if (res.status > 400) {
-      throw new Error(res.statusText);
-    }
 
     return Buffer.from(res.data, 'binary');
   }
