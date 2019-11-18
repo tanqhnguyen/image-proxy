@@ -4,6 +4,7 @@ import { Image } from '~entities/Image';
 import * as crypto from 'crypto';
 
 import { Repository } from 'typeorm';
+import { normalizeUrl } from '~common/Url';
 
 type Params = {
   repository: Repository<Image>;
@@ -50,5 +51,16 @@ export class ImagePgConnector implements Connector.Image {
     }
 
     return row;
+  }
+
+  async getIdByUrl(url: string, query?: object): Promise<string | null> {
+    const image = await this.repository.findOne(
+      this.constructId(normalizeUrl(url, query)),
+      {
+        select: ['id'],
+      },
+    );
+
+    return image ? image.id : null;
   }
 }
