@@ -1,6 +1,8 @@
 import { Connector, WithoutMetaColumn } from '~types';
 import { Image } from '~entities/Image';
 
+import * as crypto from 'crypto';
+
 import { Repository } from 'typeorm';
 
 type Params = {
@@ -14,12 +16,22 @@ export class ImagePgConnector implements Connector.Image {
     Object.assign(this, params);
   }
 
+  private constructId(url: string): string {
+    return crypto
+      .createHash('md5')
+      .update(url)
+      .digest('hex');
+  }
+
   async upsert(image: WithoutMetaColumn<Image>): Promise<Image> {
     const result = await this.repository
       .createQueryBuilder()
       .insert()
       .into(Image)
-      .values(image)
+      .values({
+        ...image,
+        id: this.constructId(image.url),
+      })
       .onConflict(
         `("id") DO UPDATE SET
         "mime" = EXCLUDED.mime,

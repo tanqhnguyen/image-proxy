@@ -12,6 +12,9 @@ export class Image {
   id: string;
 
   @Column({ nullable: false })
+  url: string;
+
+  @Column({ nullable: false })
   mime: string;
 
   @Column({ nullable: false })

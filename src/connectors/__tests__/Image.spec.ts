@@ -23,7 +23,7 @@ test('insert a new record', async t => {
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
 
   const image = await connector.upsert({
-    id: 'test1',
+    url: 'test1',
     mime: 'something',
     ext: 'jpg',
     size: 1000,
@@ -44,7 +44,7 @@ test('update an existing record but keep the content', async t => {
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
 
   const image = await connector.upsert({
-    id: 'test2',
+    url: 'test2',
     mime: 'something',
     ext: 'jpg',
     size: 1000,
@@ -56,7 +56,7 @@ test('update an existing record but keep the content', async t => {
   t.is(file.compare(createdImage.content), 0);
 
   await connector.upsert({
-    id: 'test2',
+    url: 'test2',
     mime: 'something else',
     ext: 'jpg',
     size: 2000,
@@ -82,7 +82,7 @@ test('update an existing record and change the content', async t => {
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
 
   const image = await connector.upsert({
-    id: 'test3',
+    url: 'test3',
     mime: 'something',
     ext: 'jpg',
     size: 1000,
@@ -95,7 +95,7 @@ test('update an existing record and change the content', async t => {
 
   const newFile = fs.readFileSync(`${__dirname}/fixtures/sample2.jpg`);
   await connector.upsert({
-    id: 'test3',
+    url: 'test3',
     mime: 'something else',
     ext: 'jpg',
     size: 2000,
