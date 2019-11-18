@@ -63,4 +63,8 @@ export class ImagePgConnector implements Connector.Image {
 
     return image ? image.id : null;
   }
+
+  getById(id: string): Promise<Image> {
+    return this.repository.findOne(id);
+  }
 }
