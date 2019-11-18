@@ -26,7 +26,3 @@ export type Services = {
 export interface FileFetcher {
   getRemoteAsBuffer(url: string): Promise<Buffer>;
 }
-
-export interface BackgroundJob<T> {
-  schedule(params: T): Promise<void>;
-}
