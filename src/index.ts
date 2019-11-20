@@ -1,4 +1,4 @@
-import { createConnection, getRepository } from 'typeorm';
+import { createConnection } from 'typeorm';
 
 import * as express from 'express';
 

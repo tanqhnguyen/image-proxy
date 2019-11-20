@@ -4,7 +4,6 @@ import { Image } from '~entities/Image';
 import * as crypto from 'crypto';
 
 import { Repository } from 'typeorm';
-import { normalizeUrl } from '~common/Url';
 
 type Params = {
   repository: Repository<Image>;
