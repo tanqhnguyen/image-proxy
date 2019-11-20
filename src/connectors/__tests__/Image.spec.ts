@@ -1,23 +1,21 @@
 import test from 'ava';
 
-import { createConnection, getRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Image } from '~entities/Image';
 import { ImagePgConnector } from '~connectors/Image';
 import * as fs from 'fs';
+import { setupConnection } from '~test/database';
+
+let imageRepository: Repository<Image>;
 
 test.before(async () => {
-  const connection = await createConnection();
-  await connection.synchronize();
-});
-
-test.after.always(async () => {
-  await getRepository(Image).clear();
+  const connection = await setupConnection();
+  imageRepository = connection.getRepository(Image);
 });
 
 test('insert a new record', async t => {
-  const repository = getRepository(Image);
   const connector = new ImagePgConnector({
-    repository,
+    repository: imageRepository,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -30,15 +28,14 @@ test('insert a new record', async t => {
     content: file,
   });
 
-  const savedImage = await repository.findOne(image.id);
+  const savedImage = await imageRepository.findOne(image.id);
 
   t.is(file.compare(savedImage.content), 0);
 });
 
 test('update an existing record but keep the content', async t => {
-  const repository = getRepository(Image);
   const connector = new ImagePgConnector({
-    repository,
+    repository: imageRepository,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -51,7 +48,7 @@ test('update an existing record but keep the content', async t => {
     content: file,
   });
 
-  const createdImage = await repository.findOne(image.id);
+  const createdImage = await imageRepository.findOne(image.id);
 
   t.is(file.compare(createdImage.content), 0);
 
@@ -63,7 +60,7 @@ test('update an existing record but keep the content', async t => {
     content: file,
   });
 
-  const updatedImage = await repository.findOne(image.id);
+  const updatedImage = await imageRepository.findOne(image.id);
   t.is(file.compare(updatedImage.content), 0);
   t.is(updatedImage.mime, 'something else');
   t.is(updatedImage.size, 2000);
@@ -74,9 +71,8 @@ test('update an existing record but keep the content', async t => {
 });
 
 test('update an existing record and change the content', async t => {
-  const repository = getRepository(Image);
   const connector = new ImagePgConnector({
-    repository,
+    repository: imageRepository,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -89,7 +85,7 @@ test('update an existing record and change the content', async t => {
     content: file,
   });
 
-  const createdImage = await repository.findOne(image.id);
+  const createdImage = await imageRepository.findOne(image.id);
 
   t.is(file.compare(createdImage.content), 0);
 
@@ -102,6 +98,6 @@ test('update an existing record and change the content', async t => {
     content: newFile,
   });
 
-  const updatedImage = await repository.findOne(image.id);
+  const updatedImage = await imageRepository.findOne(image.id);
   t.not(file.compare(updatedImage.content), 0);
 });
