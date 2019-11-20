@@ -1,4 +1,4 @@
-import { Connector, WithoutMetaColumn } from '~types';
+import { Connector } from '~types';
 import { Image } from '~entities/Image';
 
 import * as crypto from 'crypto';
@@ -23,7 +23,7 @@ export class ImagePgConnector implements Connector.Image {
       .digest('hex');
   }
 
-  async upsert(image: WithoutMetaColumn<Image>): Promise<Image> {
+  async upsert(image: Connector.ImageUpsertParams): Promise<Image> {
     const result = await this.repository
       .createQueryBuilder()
       .insert()

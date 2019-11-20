@@ -4,7 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+
+import { Link } from './Link';
 
 @Entity()
 export class Image {
@@ -25,6 +28,12 @@ export class Image {
 
   @Column({ type: 'bytea', nullable: false })
   content: Buffer;
+
+  @OneToMany(
+    () => Link,
+    link => link.image,
+  )
+  links: Link[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

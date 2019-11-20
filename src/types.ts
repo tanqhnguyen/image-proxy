@@ -3,8 +3,9 @@ import { Image as ImageEntity } from '~entities/Image';
 export type WithoutMetaColumn<T> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>;
 
 export namespace Connector {
+  export type ImageUpsertParams = Omit<WithoutMetaColumn<ImageEntity>, 'links'>;
   export interface Image {
-    upsert(image: WithoutMetaColumn<ImageEntity>): Promise<ImageEntity>;
+    upsert(image: ImageUpsertParams): Promise<ImageEntity>;
     getByUrl(url: string): Promise<ImageEntity | null>;
   }
 
