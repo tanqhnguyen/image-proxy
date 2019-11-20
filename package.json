@@ -5,6 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "test": "ava",
+    "test-ci": "./test/run.sh",
     "build": "tsc -p tsconfig.release.json",
     "lint": "eslint src/**/*.ts",
     "dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node -r tsconfig-paths/register' src/index.ts",
