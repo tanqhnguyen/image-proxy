@@ -10,7 +10,7 @@ import { FileConnector } from '~connectors/File';
 import { LinkPgConnector } from '~connectors/Link';
 
 import { setupConnection } from '~test/database';
-import { AxiosFileFetcher } from '~common/FileFetcher';
+import { AxiosHttpRequest } from '~common/HttpRequest';
 
 let imageRepository: Repository<File>;
 let linkRepository: Repository<Link>;
@@ -23,7 +23,7 @@ test.before(async () => {
 
   imageConnector = new FileConnector({
     repository: imageRepository,
-    fileFetcher: new AxiosFileFetcher(),
+    httpRequest: new AxiosHttpRequest(),
   });
 });
 

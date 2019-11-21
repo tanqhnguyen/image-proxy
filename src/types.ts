@@ -40,6 +40,6 @@ export type Connectors = {
   link: Connector.Link;
 };
 
-export interface FileFetcher {
+export interface HttpRequest {
   getRemoteAsBuffer(url: string): Promise<Buffer>;
 }

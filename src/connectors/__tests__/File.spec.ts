@@ -5,11 +5,11 @@ import { File } from '~entities/File';
 import { FileConnector } from '~connectors/File';
 import * as fs from 'fs';
 import { setupConnection } from '~test/database';
-import { AxiosFileFetcher } from '~common/FileFetcher';
+import { AxiosHttpRequest } from '~common/HttpRequest';
 
 let imageRepository: Repository<File>;
 
-const fileFetcher = new AxiosFileFetcher();
+const fileFetcher = new AxiosHttpRequest();
 
 test.before(async () => {
   const connection = await setupConnection();
@@ -19,7 +19,7 @@ test.before(async () => {
 test('insert a new record', async t => {
   const connector = new FileConnector({
     repository: imageRepository,
-    fileFetcher,
+    httpRequest: fileFetcher,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -40,7 +40,7 @@ test('insert a new record', async t => {
 test('update an existing record but keep the content', async t => {
   const connector = new FileConnector({
     repository: imageRepository,
-    fileFetcher,
+    httpRequest: fileFetcher,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -78,7 +78,7 @@ test('update an existing record but keep the content', async t => {
 test('update an existing record and change the content', async t => {
   const connector = new FileConnector({
     repository: imageRepository,
-    fileFetcher,
+    httpRequest: fileFetcher,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);

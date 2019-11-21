@@ -6,14 +6,14 @@ import { setupConnectors } from '~connectors/index';
 
 import { setupConnection } from '~test/database';
 import { Connectors } from '~types';
-import { AxiosFileFetcher } from '~common/FileFetcher';
+import { AxiosHttpRequest } from '~common/HttpRequest';
 
 let connectors: Connectors;
 let service: RemoteFileProxy;
 test.before(async () => {
   const connection = await setupConnection();
   connectors = setupConnectors({
-    fileFetcher: new AxiosFileFetcher(),
+    httpRequest: new AxiosHttpRequest(),
     connection,
   });
 

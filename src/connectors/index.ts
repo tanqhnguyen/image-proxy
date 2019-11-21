@@ -6,10 +6,10 @@ import { LinkPgConnector } from '~connectors/Link';
 import { File } from '~entities/File';
 import { Link } from '~entities/Link';
 
-import { Connectors, FileFetcher } from '~types';
+import { Connectors, HttpRequest } from '~types';
 
 type Params = {
-  fileFetcher: FileFetcher;
+  httpRequest: HttpRequest;
   connection: Connection;
 };
 
@@ -18,7 +18,7 @@ export function setupConnectors(params: Params): Connectors {
   return {
     file: new FileConnector({
       repository: connection.getRepository(File),
-      fileFetcher: params.fileFetcher,
+      httpRequest: params.httpRequest,
     }),
     link: new LinkPgConnector({
       repository: connection.getRepository(Link),

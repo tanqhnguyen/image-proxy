@@ -1,4 +1,4 @@
-import { Connector, FileFetcher } from '~types';
+import { Connector, HttpRequest } from '~types';
 import { File } from '~entities/File';
 
 import * as crypto from 'crypto';
@@ -8,12 +8,12 @@ import { Repository } from 'typeorm';
 
 type Params = {
   repository: Repository<File>;
-  fileFetcher: FileFetcher;
+  httpRequest: HttpRequest;
 };
 
 export class FileConnector implements Connector.File {
   private repository: Repository<File>;
-  private fileFetcher: FileFetcher;
+  private httpRequest: HttpRequest;
 
   constructor(params: Params) {
     Object.assign(this, params);
@@ -86,7 +86,7 @@ export class FileConnector implements Connector.File {
   async getRemote(
     url: string,
   ): Promise<{ content: Buffer; name: string; ext: string; mime: string }> {
-    const content = await this.fileFetcher.getRemoteAsBuffer(url);
+    const content = await this.httpRequest.getRemoteAsBuffer(url);
 
     return {
       ...this.extractFileExtension(url),

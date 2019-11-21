@@ -1,13 +1,13 @@
 import axios, { AxiosInstance } from 'axios';
 
-import { FileFetcher } from '~types';
+import { HttpRequest } from '~types';
 
 const DEFAULT_PARAMS = {
   timeout: 60000,
   headers: {},
 };
 
-export class AxiosFileFetcher implements FileFetcher {
+export class AxiosHttpRequest implements HttpRequest {
   private axios: AxiosInstance;
 
   constructor(

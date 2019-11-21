@@ -7,7 +7,7 @@ import { setupImagesRoute } from './routes/images';
 import { Config } from '~config';
 import { setupConnectors } from './connectors/index';
 import { setupServices } from './services/index';
-import { AxiosFileFetcher } from '~common/FileFetcher';
+import { AxiosHttpRequest } from '~common/HttpRequest';
 
 (async (): Promise<void> => {
   const connection = await createConnection();
@@ -18,7 +18,7 @@ import { AxiosFileFetcher } from '~common/FileFetcher';
   }
 
   const connectors = setupConnectors({
-    fileFetcher: new AxiosFileFetcher(),
+    httpRequest: new AxiosHttpRequest(),
     connection,
   });
 
