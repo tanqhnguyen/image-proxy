@@ -8,15 +8,12 @@ export namespace Connector {
   export interface Image {
     upsert(image: ImageUpsertParams): Promise<ImageEntity>;
     getByUrl(url: string): Promise<ImageEntity | null>;
+    getRemote(url: string): Promise<Buffer>;
   }
 
   export interface Link {
     generate(imageId: ImageEntity['id'], ttl?: number): Promise<LinkEntity>;
     getValidByImageId(imageId: ImageEntity['id']): Promise<LinkEntity[]>;
-  }
-
-  export interface File {
-    getRemote(url: string): Promise<Buffer>;
   }
 }
 
@@ -33,7 +30,6 @@ export type Services = {
 
 export type Connectors = {
   image: Connector.Image;
-  file: Connector.File;
   link: Connector.Link;
 };
 

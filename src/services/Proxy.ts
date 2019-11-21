@@ -4,13 +4,11 @@ import { extractFileExtension } from '~common/Url';
 import { Link } from '~entities/Link';
 
 type Params = {
-  fileConnector: Connector.File;
   imageConnector: Connector.Image;
   linkConnector: Connector.Link;
 };
 
 export class ImageProxy implements Service.Proxy {
-  private fileConnector: Connector.File;
   private imageConnector: Connector.Image;
   private linkConnector: Connector.Link;
 
@@ -24,7 +22,7 @@ export class ImageProxy implements Service.Proxy {
       return image;
     }
 
-    const content = await this.fileConnector.getRemote(url);
+    const content = await this.imageConnector.getRemote(url);
     const { ext, mime } = extractFileExtension(url);
 
     return this.imageConnector.upsert({

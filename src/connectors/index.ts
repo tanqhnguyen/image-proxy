@@ -1,6 +1,5 @@
 import { Connection } from 'typeorm';
 
-import { RemoteFileConnector } from '~connectors/File';
 import { ImagePgConnector } from '~connectors/Image';
 import { LinkPgConnector } from '~connectors/Link';
 
@@ -19,12 +18,10 @@ export function setupConnectors(params: Params): Connectors {
   return {
     image: new ImagePgConnector({
       repository: connection.getRepository(Image),
+      fileFetcher: params.fileFetcher,
     }),
     link: new LinkPgConnector({
       repository: connection.getRepository(Link),
-    }),
-    file: new RemoteFileConnector({
-      fileFetcher: params.fileFetcher,
     }),
   };
 }

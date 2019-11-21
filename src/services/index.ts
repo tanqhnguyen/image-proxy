@@ -10,7 +10,6 @@ export function setupServices(params: Params): Services {
   return {
     imageProxy: new ImageProxy({
       imageConnector: connectors.image,
-      fileConnector: connectors.file,
       linkConnector: connectors.link,
     }),
   };

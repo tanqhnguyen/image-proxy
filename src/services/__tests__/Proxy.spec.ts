@@ -18,7 +18,6 @@ test.before(async () => {
   });
 
   service = new ImageProxy({
-    fileConnector: connectors.file,
     imageConnector: connectors.image,
     linkConnector: connectors.link,
   });

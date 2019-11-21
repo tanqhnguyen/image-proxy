@@ -5,8 +5,11 @@ import { Image } from '~entities/Image';
 import { ImagePgConnector } from '~connectors/Image';
 import * as fs from 'fs';
 import { setupConnection } from '~test/database';
+import { AxiosFileFetcher } from '~common/FileFetcher';
 
 let imageRepository: Repository<Image>;
+
+const fileFetcher = new AxiosFileFetcher();
 
 test.before(async () => {
   const connection = await setupConnection();
@@ -16,6 +19,7 @@ test.before(async () => {
 test('insert a new record', async t => {
   const connector = new ImagePgConnector({
     repository: imageRepository,
+    fileFetcher,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -36,6 +40,7 @@ test('insert a new record', async t => {
 test('update an existing record but keep the content', async t => {
   const connector = new ImagePgConnector({
     repository: imageRepository,
+    fileFetcher,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -73,6 +78,7 @@ test('update an existing record but keep the content', async t => {
 test('update an existing record and change the content', async t => {
   const connector = new ImagePgConnector({
     repository: imageRepository,
+    fileFetcher,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);

@@ -1,4 +1,4 @@
-import { Connector } from '~types';
+import { Connector, FileFetcher } from '~types';
 import { Image } from '~entities/Image';
 
 import * as crypto from 'crypto';
@@ -7,10 +7,12 @@ import { Repository } from 'typeorm';
 
 type Params = {
   repository: Repository<Image>;
+  fileFetcher: FileFetcher;
 };
 
 export class ImagePgConnector implements Connector.Image {
   private repository: Repository<Image>;
+  private fileFetcher: FileFetcher;
 
   constructor(params: Params) {
     Object.assign(this, params);
@@ -60,11 +62,11 @@ export class ImagePgConnector implements Connector.Image {
     return image ? image.id : null;
   }
 
-  getById(id: string): Promise<Image> {
-    return this.repository.findOne(id);
-  }
-
   getByUrl(url: string): Promise<Image> {
     return this.repository.findOne(this.constructId(url));
+  }
+
+  getRemote(url: string): Promise<Buffer> {
+    return this.fileFetcher.getRemoteAsBuffer(url);
   }
 }
