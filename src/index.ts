@@ -19,6 +19,7 @@ import { AxiosFileFetcher } from '~common/FileFetcher';
 
   const connectors = setupConnectors({
     fileFetcher: new AxiosFileFetcher(),
+    connection,
   });
 
   const services = setupServices({ connectors });
