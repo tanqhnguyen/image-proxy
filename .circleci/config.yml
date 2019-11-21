@@ -4,15 +4,19 @@ jobs:
     working_directory: ~/mern-starter
     docker:
       - image: circleci/node:10
+      - image: circleci/postgres:10
+        environment:
+          POSTGRES_PASSWORD: imageproxytest
+          POSTGRES_DB: imageproxytest
+          POSTGRES_USER: imageproxytest
     steps:
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - setup_remote_docker
       - checkout
       - run:
-          name: Test, baby, test!
-          command: npm run test-ci
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Copy test .env
+          command: cp ./.circleci/.env ./
+      - run:
+          name: Test
+          command: npm test
