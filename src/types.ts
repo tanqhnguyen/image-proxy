@@ -12,7 +12,7 @@ export namespace Connector {
 
   export interface Link {
     generate(imageId: ImageEntity['id'], ttl?: number): Promise<LinkEntity>;
-    getFirstValidByImageId(imageId: ImageEntity['id']): Promise<LinkEntity>;
+    getValidByImageId(imageId: ImageEntity['id']): Promise<LinkEntity[]>;
   }
 
   export interface File {

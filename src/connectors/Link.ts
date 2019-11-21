@@ -34,14 +34,20 @@ export class LinkPgConnector implements Connector.Link {
         .toDate(),
     });
 
-    return result.raw;
+    const link = result.raw[0];
+
+    if (!link) {
+      throw new Error('Failed to insert');
+    }
+
+    return link;
   }
 
-  async getFirstValidByImageId(imageId: Image['id']): Promise<Link> {
+  async getValidByImageId(imageId: Image['id']): Promise<Link[]> {
     const image = new Image();
     image.id = imageId;
 
-    const result = await this.repository.findOne({
+    const result = await this.repository.find({
       where: {
         image,
         expiredAt: Raw(alias => `${alias} > NOW()`),
@@ -52,6 +58,6 @@ export class LinkPgConnector implements Connector.Link {
       },
     });
 
-    return result || null;
+    return result;
   }
 }

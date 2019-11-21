@@ -45,3 +45,43 @@ test('insert a new record', async t => {
 
   t.is(moment.utc(savedLink.expiredAt).diff(moment.utc(), 'days'), 6);
 });
+
+test('get first valid link', async t => {
+  const connector = new LinkPgConnector({
+    repository: linkRepository,
+  });
+
+  const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
+
+  const image = await imageConnector.upsert({
+    url: 'test2',
+    mime: 'something',
+    ext: 'jpg',
+    size: 1000,
+    content: file,
+  });
+
+  const link1 = await connector.generate(image.id);
+  const link2 = await connector.generate(image.id);
+
+  const valid1 = await connector.getValidByImageId(image.id);
+
+  t.is(valid1.length, 2);
+  t.deepEqual(
+    [link2.id, link1.id],
+    valid1.map(link => link.id),
+  );
+
+  link2.expiredAt = moment
+    .utc()
+    .subtract(7, 'days')
+    .toDate();
+  await linkRepository.save(link2);
+  const valid2 = await connector.getValidByImageId(image.id);
+
+  t.is(valid2.length, 1);
+  t.deepEqual(
+    [link1.id],
+    valid2.map(link => link.id),
+  );
+});
