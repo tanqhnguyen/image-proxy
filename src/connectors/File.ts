@@ -2,6 +2,7 @@ import { Connector, FileFetcher } from '~types';
 import { File } from '~entities/File';
 
 import * as crypto from 'crypto';
+import * as mime from 'mime';
 
 import { Repository } from 'typeorm';
 
@@ -66,7 +67,30 @@ export class FileConnector implements Connector.File {
     return this.repository.findOne(this.constructId(url));
   }
 
-  getRemote(url: string): Promise<Buffer> {
-    return this.fileFetcher.getRemoteAsBuffer(url);
+  private extractFileExtension(
+    url: string,
+  ): { name: string; ext: string; mime: string } {
+    const urlObject = new URL(url);
+    const { pathname } = urlObject;
+    const parts = pathname.split('/');
+
+    const [fileName, fileExt] = parts.slice(-1)[0].split('.');
+
+    return {
+      name: fileName,
+      ext: fileExt,
+      mime: mime.getType(fileExt),
+    };
+  }
+
+  async getRemote(
+    url: string,
+  ): Promise<{ content: Buffer; name: string; ext: string; mime: string }> {
+    const content = await this.fileFetcher.getRemoteAsBuffer(url);
+
+    return {
+      ...this.extractFileExtension(url),
+      content,
+    };
   }
 }

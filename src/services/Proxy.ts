@@ -1,6 +1,5 @@
 import { Service, Connector } from '~types';
 import { File } from '~entities/File';
-import { extractFileExtension } from '~common/Url';
 import { Link } from '~entities/Link';
 
 interface Params {
@@ -22,8 +21,7 @@ export class RemoteFileProxy implements Service.Proxy {
       return file;
     }
 
-    const content = await this.fileConnector.getRemote(url);
-    const { ext, mime } = extractFileExtension(url);
+    const { content, ext, mime } = await this.fileConnector.getRemote(url);
 
     return this.fileConnector.upsert({
       url,

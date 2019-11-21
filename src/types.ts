@@ -8,7 +8,14 @@ export namespace Connector {
   export interface File {
     upsert(file: FileUpsertParams): Promise<FileEntity>;
     getByUrl(url: string): Promise<FileEntity | null>;
-    getRemote(url: string): Promise<Buffer>;
+    getRemote(
+      url: string,
+    ): Promise<{
+      content: Buffer;
+      name: string;
+      ext: string;
+      mime: string;
+    }>;
   }
 
   export interface Link {
