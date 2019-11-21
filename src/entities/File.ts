@@ -10,7 +10,7 @@ import {
 import { Link } from './Link';
 
 @Entity()
-export class Image {
+export class File {
   @PrimaryColumn()
   id: string;
 
@@ -31,7 +31,7 @@ export class Image {
 
   @OneToMany(
     () => Link,
-    link => link.image,
+    link => link.file,
   )
   links: Link[];
 

@@ -1,35 +1,35 @@
-import { Image as ImageEntity } from '~entities/Image';
+import { File as FileEntity } from '~entities/File';
 import { Link as LinkEntity } from '~entities/Link';
 
 export type WithoutMetaColumn<T> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>;
 
 export namespace Connector {
-  export type ImageUpsertParams = Omit<WithoutMetaColumn<ImageEntity>, 'links'>;
-  export interface Image {
-    upsert(image: ImageUpsertParams): Promise<ImageEntity>;
-    getByUrl(url: string): Promise<ImageEntity | null>;
+  export type FileUpsertParams = Omit<WithoutMetaColumn<FileEntity>, 'links'>;
+  export interface File {
+    upsert(file: FileUpsertParams): Promise<FileEntity>;
+    getByUrl(url: string): Promise<FileEntity | null>;
     getRemote(url: string): Promise<Buffer>;
   }
 
   export interface Link {
-    generate(imageId: ImageEntity['id'], ttl?: number): Promise<LinkEntity>;
-    getValidByImageId(imageId: ImageEntity['id']): Promise<LinkEntity[]>;
+    generate(fileId: FileEntity['id'], ttl?: number): Promise<LinkEntity>;
+    getValidByFileId(fileId: FileEntity['id']): Promise<LinkEntity[]>;
   }
 }
 
 export namespace Service {
   export interface Proxy {
-    importFromUrlIfNotExists(url: string): Promise<ImageEntity | null>;
+    importFromUrlIfNotExists(url: string): Promise<FileEntity | null>;
     generateNewLinkIfNotAvailable(url: string): Promise<LinkEntity>;
   }
 }
 
 export type Services = {
-  imageProxy: Service.Proxy;
+  remoteFile: Service.Proxy;
 };
 
 export type Connectors = {
-  image: Connector.Image;
+  file: Connector.File;
   link: Connector.Link;
 };
 

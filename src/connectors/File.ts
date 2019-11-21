@@ -1,17 +1,17 @@
 import { Connector, FileFetcher } from '~types';
-import { Image } from '~entities/Image';
+import { File } from '~entities/File';
 
 import * as crypto from 'crypto';
 
 import { Repository } from 'typeorm';
 
 type Params = {
-  repository: Repository<Image>;
+  repository: Repository<File>;
   fileFetcher: FileFetcher;
 };
 
-export class ImagePgConnector implements Connector.Image {
-  private repository: Repository<Image>;
+export class FileConnector implements Connector.File {
+  private repository: Repository<File>;
   private fileFetcher: FileFetcher;
 
   constructor(params: Params) {
@@ -25,14 +25,14 @@ export class ImagePgConnector implements Connector.Image {
       .digest('hex');
   }
 
-  async upsert(image: Connector.ImageUpsertParams): Promise<Image> {
+  async upsert(file: Connector.FileUpsertParams): Promise<File> {
     const result = await this.repository
       .createQueryBuilder()
       .insert()
-      .into(Image)
+      .into(File)
       .values({
-        ...image,
-        id: this.constructId(image.url),
+        ...file,
+        id: this.constructId(file.url),
       })
       .onConflict(
         `("id") DO UPDATE SET
@@ -55,14 +55,14 @@ export class ImagePgConnector implements Connector.Image {
   }
 
   async getIdByUrl(url: string): Promise<string | null> {
-    const image = await this.repository.findOne(this.constructId(url), {
+    const file = await this.repository.findOne(this.constructId(url), {
       select: ['id'],
     });
 
-    return image ? image.id : null;
+    return file ? file.id : null;
   }
 
-  getByUrl(url: string): Promise<Image> {
+  getByUrl(url: string): Promise<File> {
     return this.repository.findOne(this.constructId(url));
   }
 

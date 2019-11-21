@@ -7,7 +7,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 
-import { Image } from './Image';
+import { File } from './File';
 
 @Entity()
 export class Link {
@@ -15,10 +15,10 @@ export class Link {
   id: string;
 
   @ManyToOne(
-    () => Image,
-    image => image.links,
+    () => File,
+    file => file.links,
   )
-  image: Image;
+  file: File;
 
   @Column({ type: 'timestamptz' })
   expiredAt: Date;

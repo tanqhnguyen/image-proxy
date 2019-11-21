@@ -3,25 +3,25 @@ import * as fs from 'fs';
 import * as moment from 'moment';
 
 import { Repository } from 'typeorm';
-import { Image } from '~entities/Image';
+import { File } from '~entities/File';
 import { Link } from '~entities/Link';
 
-import { ImagePgConnector } from '~connectors/Image';
+import { FileConnector } from '~connectors/File';
 import { LinkPgConnector } from '~connectors/Link';
 
 import { setupConnection } from '~test/database';
 import { AxiosFileFetcher } from '~common/FileFetcher';
 
-let imageRepository: Repository<Image>;
+let imageRepository: Repository<File>;
 let linkRepository: Repository<Link>;
-let imageConnector: ImagePgConnector;
+let imageConnector: FileConnector;
 
 test.before(async () => {
   const connection = await setupConnection();
-  imageRepository = connection.getRepository(Image);
+  imageRepository = connection.getRepository(File);
   linkRepository = connection.getRepository(Link);
 
-  imageConnector = new ImagePgConnector({
+  imageConnector = new FileConnector({
     repository: imageRepository,
     fileFetcher: new AxiosFileFetcher(),
   });
@@ -66,7 +66,7 @@ test('get first valid link', async t => {
   const link1 = await connector.generate(image.id);
   const link2 = await connector.generate(image.id);
 
-  const valid1 = await connector.getValidByImageId(image.id);
+  const valid1 = await connector.getValidByFileId(image.id);
 
   t.is(valid1.length, 2);
   t.deepEqual(
@@ -79,7 +79,7 @@ test('get first valid link', async t => {
     .subtract(7, 'days')
     .toDate();
   await linkRepository.save(link2);
-  const valid2 = await connector.getValidByImageId(image.id);
+  const valid2 = await connector.getValidByFileId(image.id);
 
   t.is(valid2.length, 1);
   t.deepEqual(

@@ -1,5 +1,5 @@
 import { Services, Connectors } from '~types';
-import { ImageProxy } from '~services/Proxy';
+import { RemoteFileProxy } from '~services/Proxy';
 
 type Params = {
   connectors: Connectors;
@@ -8,8 +8,8 @@ type Params = {
 export function setupServices(params: Params): Services {
   const { connectors } = params;
   return {
-    imageProxy: new ImageProxy({
-      imageConnector: connectors.image,
+    remoteFile: new RemoteFileProxy({
+      fileConnector: connectors.file,
       linkConnector: connectors.link,
     }),
   };

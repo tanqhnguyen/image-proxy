@@ -6,7 +6,7 @@ export function setupImagesRoute(router: Router, services: Services): Router {
   router.get(
     '/',
     serveStaticFile<{ url: string }>(async params => {
-      const image = await services.imageProxy.importFromUrlIfNotExists(
+      const image = await services.remoteFile.importFromUrlIfNotExists(
         params.url,
       );
       if (!image) {

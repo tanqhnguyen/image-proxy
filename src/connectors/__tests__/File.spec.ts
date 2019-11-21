@@ -1,23 +1,23 @@
 import test from 'ava';
 
 import { Repository } from 'typeorm';
-import { Image } from '~entities/Image';
-import { ImagePgConnector } from '~connectors/Image';
+import { File } from '~entities/File';
+import { FileConnector } from '~connectors/File';
 import * as fs from 'fs';
 import { setupConnection } from '~test/database';
 import { AxiosFileFetcher } from '~common/FileFetcher';
 
-let imageRepository: Repository<Image>;
+let imageRepository: Repository<File>;
 
 const fileFetcher = new AxiosFileFetcher();
 
 test.before(async () => {
   const connection = await setupConnection();
-  imageRepository = connection.getRepository(Image);
+  imageRepository = connection.getRepository(File);
 });
 
 test('insert a new record', async t => {
-  const connector = new ImagePgConnector({
+  const connector = new FileConnector({
     repository: imageRepository,
     fileFetcher,
   });
@@ -38,7 +38,7 @@ test('insert a new record', async t => {
 });
 
 test('update an existing record but keep the content', async t => {
-  const connector = new ImagePgConnector({
+  const connector = new FileConnector({
     repository: imageRepository,
     fileFetcher,
   });
@@ -76,7 +76,7 @@ test('update an existing record but keep the content', async t => {
 });
 
 test('update an existing record and change the content', async t => {
-  const connector = new ImagePgConnector({
+  const connector = new FileConnector({
     repository: imageRepository,
     fileFetcher,
   });

@@ -1,7 +1,7 @@
 import test from 'ava';
 import * as nock from 'nock';
 
-import { ImageProxy } from '~services/Proxy';
+import { RemoteFileProxy } from '~services/Proxy';
 import { setupConnectors } from '~connectors/index';
 
 import { setupConnection } from '~test/database';
@@ -9,7 +9,7 @@ import { Connectors } from '~types';
 import { AxiosFileFetcher } from '~common/FileFetcher';
 
 let connectors: Connectors;
-let service: ImageProxy;
+let service: RemoteFileProxy;
 test.before(async () => {
   const connection = await setupConnection();
   connectors = setupConnectors({
@@ -17,8 +17,8 @@ test.before(async () => {
     connection,
   });
 
-  service = new ImageProxy({
-    imageConnector: connectors.image,
+  service = new RemoteFileProxy({
+    fileConnector: connectors.file,
     linkConnector: connectors.link,
   });
 

@@ -1,6 +1,6 @@
 import { Connector } from '~types';
 import { Link } from '~entities/Link';
-import { Image } from '~entities/Image';
+import { File } from '~entities/File';
 
 import * as moment from 'moment';
 
@@ -20,14 +20,14 @@ export class LinkPgConnector implements Connector.Link {
   }
 
   async generate(
-    imageId: Image['id'],
+    fileId: File['id'],
     ttl: number = ONE_WEEK_IN_SECONDS,
   ): Promise<Link> {
-    const image = new Image();
-    image.id = imageId;
+    const file = new File();
+    file.id = fileId;
 
     const result = await this.repository.insert({
-      image,
+      file: file,
       expiredAt: moment
         .utc()
         .add(ttl, 'seconds')
@@ -43,13 +43,13 @@ export class LinkPgConnector implements Connector.Link {
     return link;
   }
 
-  async getValidByImageId(imageId: Image['id']): Promise<Link[]> {
-    const image = new Image();
-    image.id = imageId;
+  async getValidByFileId(fileId: File['id']): Promise<Link[]> {
+    const file = new File();
+    file.id = fileId;
 
     const result = await this.repository.find({
       where: {
-        image,
+        file,
         expiredAt: Raw(alias => `${alias} > NOW()`),
       },
       order: {

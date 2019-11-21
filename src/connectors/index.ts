@@ -1,9 +1,9 @@
 import { Connection } from 'typeorm';
 
-import { ImagePgConnector } from '~connectors/Image';
+import { FileConnector } from '~connectors/File';
 import { LinkPgConnector } from '~connectors/Link';
 
-import { Image } from '~entities/Image';
+import { File } from '~entities/File';
 import { Link } from '~entities/Link';
 
 import { Connectors, FileFetcher } from '~types';
@@ -16,8 +16,8 @@ type Params = {
 export function setupConnectors(params: Params): Connectors {
   const { connection } = params;
   return {
-    image: new ImagePgConnector({
-      repository: connection.getRepository(Image),
+    file: new FileConnector({
+      repository: connection.getRepository(File),
       fileFetcher: params.fileFetcher,
     }),
     link: new LinkPgConnector({
