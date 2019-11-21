@@ -52,7 +52,6 @@ export class LinkPgConnector implements Connector.Link {
         image,
         expiredAt: Raw(alias => `${alias} > NOW()`),
       },
-      relations: ['image'],
       order: {
         expiredAt: 'DESC',
       },

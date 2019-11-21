@@ -23,6 +23,7 @@ export namespace Connector {
 export namespace Service {
   export interface Proxy {
     importFromUrlIfNotExists(url: string): Promise<ImageEntity | null>;
+    generateNewLinkIfNotAvailable(url: string): Promise<LinkEntity>;
   }
 }
 
@@ -33,6 +34,7 @@ export type Services = {
 export type Connectors = {
   image: Connector.Image;
   file: Connector.File;
+  link: Connector.Link;
 };
 
 export interface FileFetcher {

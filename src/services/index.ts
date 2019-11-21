@@ -11,6 +11,7 @@ export function setupServices(params: Params): Services {
     imageProxy: new ImageProxy({
       imageConnector: connectors.image,
       fileConnector: connectors.file,
+      linkConnector: connectors.link,
     }),
   };
 }
