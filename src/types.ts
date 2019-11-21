@@ -1,4 +1,5 @@
 import { Image as ImageEntity } from '~entities/Image';
+import { Link as LinkEntity } from '~entities/Link';
 
 export type WithoutMetaColumn<T> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>;
 
@@ -7,6 +8,11 @@ export namespace Connector {
   export interface Image {
     upsert(image: ImageUpsertParams): Promise<ImageEntity>;
     getByUrl(url: string): Promise<ImageEntity | null>;
+  }
+
+  export interface Link {
+    generate(imageId: ImageEntity['id'], ttl?: number): Promise<LinkEntity>;
+    getFirstValidByImageId(imageId: ImageEntity['id']): Promise<LinkEntity>;
   }
 
   export interface File {
