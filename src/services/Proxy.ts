@@ -1,6 +1,7 @@
 import { Service, Connector } from '~types';
 import { File } from '~entities/File';
 import { Link } from '~entities/Link';
+import { FileNotFoundError } from '~common/errors';
 
 interface Params {
   fileConnector: Connector.File;
@@ -35,7 +36,7 @@ export class RemoteFileProxy implements Service.Proxy {
   async generateNewLinkIfNotAvailable(url: string): Promise<Link> {
     const file = await this.fileConnector.getByUrl(url);
     if (!file) {
-      throw new Error('Image not found');
+      throw new FileNotFoundError();
     }
 
     const links = await this.linkConnector.getValidByFileId(file.id);
