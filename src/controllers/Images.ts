@@ -1,4 +1,4 @@
-import { Services } from '~types';
+import { Services, Streamable } from '~types';
 
 import { Route, Controller } from '../server';
 
@@ -36,6 +36,32 @@ export class ImagesController {
     );
     return {
       url: link.id,
+    };
+  }
+
+  @Route({
+    method: 'get',
+    url: '/:id',
+    responseType: 'binary',
+    input: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+    },
+  })
+  async serveLink(params: { id: string }): Promise<Streamable> {
+    const file = await this.services.remoteFile.getByLinkIdOrThrow(params.id);
+
+    return {
+      fileName: `${params.id}.${file.ext}`,
+      mime: file.mime,
+      content: file.content,
+      size: file.size,
+      lastModified: file.updatedAt,
     };
   }
 }
