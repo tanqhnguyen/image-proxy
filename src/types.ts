@@ -43,3 +43,37 @@ export type Connectors = {
 export interface HttpRequest {
   getRemoteAsBuffer(url: string): Promise<Buffer>;
 }
+
+export type RouteConfig = {
+  method: 'get' | 'post' | 'delete' | 'patch' | 'head' | 'option';
+  url: string;
+  input?: Partial<{
+    querystring: object;
+    body: object;
+  }>;
+  output: object;
+};
+
+export type ClassDecorator = (constructor: Function) => any;
+
+export type MethodDecorator = (
+  target,
+  propertyKey: string,
+  descriptor: PropertyDescriptor,
+) => PropertyDescriptor;
+
+export type Controller = {
+  config: { prefix: string };
+  cls: Function;
+  name: string;
+};
+
+export type Route = {
+  name: string;
+  config: RouteConfig;
+  propertyKey: string;
+};
+
+export interface Server {
+  addController();
+}

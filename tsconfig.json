@@ -6,7 +6,7 @@
       "~entities/*": ["./src/entities/*"],
       "~connectors/*": ["./src/connectors/*"],
       "~services/*": ["./src/services/*"],
-      "~routes/*": ["./src/routes/*"],
+      "~controllers/*": ["src/controllers/*"],
       "~common/*": ["./src/common/*"],
       "~config": ["./src/config"],
       "~test/*": ["./src/test/*"]
