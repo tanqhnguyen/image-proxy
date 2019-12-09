@@ -40,7 +40,7 @@ function constructRoute(
 ): fastify.RouteOptions {
   const {
     propertyKey,
-    config: { method, url, input, output, responseType },
+    config: { method, url, input, output, responseType = 'json' },
   } = route;
 
   return {
@@ -159,6 +159,12 @@ export class FastifyServer {
         });
       } else {
         const statusCode = error.statusCode || 500;
+
+        // TODO: Have a proper log solution here
+        if (statusCode === 500) {
+          console.error(error);
+        }
+
         reply.status(statusCode).send({
           success: false,
           data: null,
