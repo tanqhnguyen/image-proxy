@@ -25,17 +25,17 @@ export class ImagesController {
     output: {
       type: 'object',
       properties: {
-        url: { type: 'string' },
+        id: { type: 'string' },
       },
     },
   })
-  async importFromUrl(params: { url: string }): Promise<{ url: string }> {
+  async importFromUrl(params: { url: string }): Promise<{ id: string }> {
     await this.services.remoteFile.importFromUrlIfNotExists(params.url);
     const link = await this.services.remoteFile.generateNewLinkIfNotAvailable(
       params.url,
     );
     return {
-      url: link.id,
+      id: link.id,
     };
   }
 
