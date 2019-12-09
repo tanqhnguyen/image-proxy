@@ -21,6 +21,7 @@ export namespace Connector {
   export interface Link {
     generate(fileId: FileEntity['id'], ttl?: number): Promise<LinkEntity>;
     getValidByFileId(fileId: FileEntity['id']): Promise<LinkEntity[]>;
+    getByIdWithFile(id: LinkEntity['id']): Promise<LinkEntity | null>;
   }
 }
 
@@ -28,6 +29,7 @@ export namespace Service {
   export interface Proxy {
     importFromUrlIfNotExists(url: string): Promise<FileEntity | null>;
     generateNewLinkIfNotAvailable(url: string): Promise<LinkEntity>;
+    getByLinkIdOrThrow(id: LinkEntity['id']): Promise<FileEntity>;
   }
 }
 
@@ -46,12 +48,14 @@ export interface HttpRequest {
 
 export type RouteConfig = {
   method: 'get' | 'post' | 'delete' | 'patch' | 'head' | 'option';
+  responseType?: 'json' | 'binary';
   url: string;
   input?: Partial<{
+    params: object;
     querystring: object;
     body: object;
   }>;
-  output: object;
+  output?: object;
 };
 
 export type ClassDecorator = (constructor: Function) => any;
@@ -62,18 +66,24 @@ export type MethodDecorator = (
   descriptor: PropertyDescriptor,
 ) => PropertyDescriptor;
 
-export type Controller = {
-  config: { prefix: string };
-  cls: Function;
-  name: string;
-};
+export namespace WebServer {
+  export type Controller = {
+    config: { prefix: string };
+    cls: Function;
+    name: string;
+  };
 
-export type Route = {
-  controllerName: string;
-  config: RouteConfig;
-  propertyKey: string;
-};
+  export type Route = {
+    controllerName: string;
+    config: RouteConfig;
+    propertyKey: string;
+  };
+}
 
-export interface Server {
-  addController();
+export interface Streamable {
+  fileName: string;
+  mime: string;
+  size: number;
+  content: Buffer;
+  lastModified: Date;
 }
