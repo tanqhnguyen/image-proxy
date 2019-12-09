@@ -59,4 +59,8 @@ export class LinkPgConnector implements Connector.Link {
 
     return result;
   }
+
+  async getByIdWithFile(id: Link['id']): Promise<Link | null> {
+    return this.repository.findOne(id, { relations: ['file'] });
+  }
 }
