@@ -1,13 +1,17 @@
 import * as fastify from 'fastify';
+import * as crypto from 'crypto';
+import * as moment from 'moment';
 import { Server, IncomingMessage, ServerResponse } from 'http';
-import 'reflect-metadata';
 
-import { Route, Controller, MethodDecorator, ClassDecorator } from '~types';
+import { WebServer, MethodDecorator, ClassDecorator } from '~types';
+import { Streamable } from '../types';
 
-const CONTROLLERS: Controller[] = [];
-const ROUTES: Route[] = [];
+const CONTROLLERS: WebServer.Controller[] = [];
+const ROUTES: WebServer.Route[] = [];
 
-export function Controller(config: Controller['config']): ClassDecorator {
+export function Controller(
+  config: WebServer.Controller['config'],
+): ClassDecorator {
   return constructor => {
     CONTROLLERS.push({
       config,
@@ -17,7 +21,7 @@ export function Controller(config: Controller['config']): ClassDecorator {
   };
 }
 
-export function Route(config: Route['config']): MethodDecorator {
+export function Route(config: WebServer.Route['config']): MethodDecorator {
   return function(target, propertyKey, descriptor) {
     ROUTES.push({
       controllerName: target.constructor.name,
@@ -30,13 +34,13 @@ export function Route(config: Route['config']): MethodDecorator {
 }
 
 function constructRoute(
-  route: Route,
+  route: WebServer.Route,
   controller: any,
   prefix: string,
 ): fastify.RouteOptions {
   const {
     propertyKey,
-    config: { method, url, input, output },
+    config: { method, url, input, output, responseType },
   } = route;
 
   return {
@@ -44,22 +48,25 @@ function constructRoute(
     url: `${prefix}${url}`,
     schema: {
       ...(input || {}),
-      response: {
-        xxx: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: {
-              type: ['object', 'null'],
-              properties: {
-                message: { type: 'string' },
-                params: { type: ['object', 'null'] },
+      response:
+        responseType === 'json'
+          ? {
+              xxx: {
+                type: 'object',
+                properties: {
+                  success: { type: 'boolean' },
+                  error: {
+                    type: ['object', 'null'],
+                    properties: {
+                      message: { type: 'string' },
+                      params: { type: ['object', 'null'] },
+                    },
+                  },
+                  data: output || {},
+                },
               },
-            },
-            data: output || {},
-          },
-        },
-      },
+            }
+          : {},
     },
     handler: async (
       request: fastify.FastifyRequest,
@@ -71,13 +78,56 @@ function constructRoute(
         ...(request.params || {}),
       };
 
-      const result = await controller[propertyKey](params);
-      reply.send({ success: true, data: result, error: null });
+      //  call the controller method
+      const result = await controller[propertyKey](params, request.headers);
+
+      if (responseType === 'json') {
+        reply.send({ success: true, data: result, error: null });
+      } else if (responseType === 'binary') {
+        const streamable: Streamable = result;
+        const format = 'ddd, DD MMM YYYY HH:mm:ss [GMT]';
+        const etag = crypto
+          .createHash('md5')
+          .update(streamable.fileName)
+          .digest('hex');
+
+        const ifNonMatch = request.headers['if-none-match'];
+        const ifModifiedSince = request.headers['if-modified-since'];
+
+        if (
+          (ifNonMatch && ifNonMatch === etag) ||
+          (ifModifiedSince &&
+            moment
+              .utc(ifModifiedSince, format)
+              .diff(moment.utc(streamable.lastModified, format), 'seconds') >=
+              0)
+        ) {
+          reply.status(304);
+          reply.send(null);
+        } else {
+          reply.headers({
+            Etag: etag,
+            'Content-Type': streamable.mime,
+            'Content-Length': streamable.size,
+            'Cache-Control': 'max-age=31536000',
+            'Last-Modified': moment.utc(streamable.lastModified).format(format),
+            Expires: moment
+              .utc()
+              .add(1, 'year')
+              .format(format),
+          });
+          reply.send(streamable.content);
+        }
+      } else {
+        throw new Error(`[${responseType}] is not supported`);
+      }
     },
   };
 }
 
 export class FastifyServer {
+  private prefix: string;
+
   private server: fastify.FastifyInstance<
     Server,
     IncomingMessage,
@@ -88,7 +138,7 @@ export class FastifyServer {
     return this.server;
   }
 
-  constructor(params?: {}) {
+  constructor(params?: Partial<{ prefix: string }>) {
     Object.assign(this, params || {});
 
     this.server = fastify({
@@ -140,7 +190,11 @@ export class FastifyServer {
     const routeOptions = ROUTES.filter(
       route => route.controllerName === definedController.name,
     ).map(route => {
-      return constructRoute(route, controller, `${prefix}${config.prefix}`);
+      return constructRoute(
+        route,
+        controller,
+        `${this.prefix || ''}${prefix}${config.prefix}`,
+      );
     });
 
     if (!routeOptions.length) {
