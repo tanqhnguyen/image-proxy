@@ -1,7 +1,7 @@
 import { Service, Connector } from '~types';
 import { File } from '~entities/File';
 import { Link } from '~entities/Link';
-import { FileNotFoundError } from '~common/errors';
+import { FileNotFoundError, LinkNotFoundError } from '~common/errors';
 
 interface Params {
   fileConnector: Connector.File;
@@ -49,5 +49,18 @@ export class RemoteFileProxy implements Service.Proxy {
     const generatedLink = await this.linkConnector.generate(file.id);
     generatedLink.file = file;
     return generatedLink;
+  }
+
+  async getByLinkIdOrThrow(id: Link['id']): Promise<File> {
+    const link = await this.linkConnector.getByIdWithFile(id);
+    if (!link) {
+      throw new LinkNotFoundError();
+    }
+
+    if (!link.file) {
+      throw new FileNotFoundError();
+    }
+
+    return link.file;
   }
 }
