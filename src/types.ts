@@ -69,7 +69,7 @@ export type Controller = {
 };
 
 export type Route = {
-  name: string;
+  controllerName: string;
   config: RouteConfig;
   propertyKey: string;
 };

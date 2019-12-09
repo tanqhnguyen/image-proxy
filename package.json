@@ -24,7 +24,7 @@
       "tsconfig-paths/register",
       "./src/test/register.ts"
     ],
-    "tap": true,
+    "tap": false,
     "verbose": true
   },
   "author": "",

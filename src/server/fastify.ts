@@ -2,21 +2,7 @@ import * as fastify from 'fastify';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 import 'reflect-metadata';
 
-import {
-  Route,
-  Controller,
-  MethodDecorator,
-  ClassDecorator,
-  Services,
-} from '~types';
-
-const server: fastify.FastifyInstance<
-  Server,
-  IncomingMessage,
-  ServerResponse
-> = fastify({
-  logger: true,
-});
+import { Route, Controller, MethodDecorator, ClassDecorator } from '~types';
 
 const CONTROLLERS: Controller[] = [];
 const ROUTES: Route[] = [];
@@ -34,7 +20,7 @@ export function Controller(config: Controller['config']): ClassDecorator {
 export function Route(config: Route['config']): MethodDecorator {
   return function(target, propertyKey, descriptor) {
     ROUTES.push({
-      name: target.constructor.name,
+      controllerName: target.constructor.name,
       config,
       propertyKey,
     });
@@ -92,59 +78,83 @@ function constructRoute(
 }
 
 export class FastifyServer {
-  private services: Services;
-  constructor(params: { services: Services }) {
-    Object.assign(this, params);
+  private server: fastify.FastifyInstance<
+    Server,
+    IncomingMessage,
+    ServerResponse
+  >;
+
+  get serverInstance() {
+    return this.server;
   }
-}
 
-export function bootstrap(
-  controllers: Object[],
-  globalParams?: { prefix: string },
-): fastify.FastifyInstance {
-  const { prefix: globalPrefix = '' } = globalParams || {};
+  constructor(params?: {}) {
+    Object.assign(this, params || {});
 
-  controllers.forEach(controller => {
-    CONTROLLERS.forEach(({ cls, name, config }) => {
-      if (!(controller instanceof cls)) {
-        return;
-      }
-
-      ROUTES.filter(route => route.name === name).forEach(route => {
-        server.route(
-          constructRoute(route, controller, `${globalPrefix}${config.prefix}`),
-        );
-      });
+    this.server = fastify({
+      logger: true,
     });
-  });
 
-  server.setErrorHandler(function(error, request, reply) {
-    if (error.validation) {
-      reply.status(400).send({
-        success: false,
-        data: null,
-        error: {
-          message: 'Invalid data',
-          params: {
-            rules: error.validation,
+    this.server.setErrorHandler(function(error, request, reply) {
+      if (error.validation) {
+        reply.status(400).send({
+          success: false,
+          data: null,
+          error: {
+            message: 'Invalid data',
+            params: {
+              rules: error.validation,
+            },
           },
-        },
-      });
-    } else {
-      const statusCode = error.statusCode || 500;
-      reply.status(statusCode).send({
-        success: false,
-        data: null,
-        error:
-          statusCode < 500
-            ? error
-            : {
-                message: 'Internal error',
-                params: null,
-              },
-      });
-    }
-  });
+        });
+      } else {
+        const statusCode = error.statusCode || 500;
+        reply.status(statusCode).send({
+          success: false,
+          data: null,
+          error:
+            statusCode < 500
+              ? error
+              : {
+                  message: 'Internal error',
+                  params: null,
+                },
+        });
+      }
+    });
+  }
 
-  return server;
+  addController(controller: any, options?: { prefix: string }) {
+    const { prefix = '' } = options || {};
+
+    const definedController = CONTROLLERS.find(({ cls }) => {
+      return controller instanceof cls;
+    });
+
+    if (!definedController) {
+      throw new Error('Is the controller decorated with @Controller?');
+    }
+
+    const { config } = definedController;
+
+    const routeOptions = ROUTES.filter(
+      route => route.controllerName === definedController.name,
+    ).map(route => {
+      return constructRoute(route, controller, `${prefix}${config.prefix}`);
+    });
+
+    if (!routeOptions.length) {
+      throw new Error(
+        `Can't find any route defined in this controller. Make sure the route is decorated with @Route`,
+      );
+    }
+
+    routeOptions.forEach(opts => {
+      this.server.route(opts);
+    });
+  }
+
+  listen(port: number) {
+    this.server.listen(port);
+  }
 }

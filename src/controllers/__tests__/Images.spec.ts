@@ -5,7 +5,7 @@ import { setupConnectors } from '~connectors/index';
 import { setupConnection } from '~test/database';
 import { AxiosHttpRequest } from '~common/HttpRequest';
 import { setupServices } from '~services/index';
-import { bootstrap } from '../../server/fastify';
+import { FastifyServer } from '../../server/fastify';
 import * as fastify from 'fastify';
 import { ImagesController } from '../Images';
 
@@ -21,13 +21,20 @@ test.before(async () => {
   const services = setupServices({ connectors });
   const images = new ImagesController({ services });
 
-  server = bootstrap([images]);
+  const fastifyServer = new FastifyServer();
+  fastifyServer.addController(images);
+
+  server = fastifyServer.serverInstance;
 
   nock.enableNetConnect('tannguyen.org');
 });
 
 test.after.always(async () => {
-  await server.close();
+  try {
+    await server.close();
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 test('import image from a remote location', async t => {

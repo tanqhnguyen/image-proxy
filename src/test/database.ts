@@ -11,6 +11,8 @@ export async function setupConnection(): Promise<Connection> {
     .replace('.spec.ts', '')
     .toLowerCase();
 
+  console.time(`Setting up a new schema [${testName}] for testing`);
+
   const defaultConnection = await createConnection();
   const hasSchema = await defaultConnection
     .createQueryRunner()
@@ -33,5 +35,7 @@ export async function setupConnection(): Promise<Connection> {
   });
 
   await connection.synchronize();
+
+  console.timeEnd(`Setting up a new schema [${testName}] for testing`);
   return connection;
 }
