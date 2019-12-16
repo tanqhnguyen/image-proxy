@@ -20,5 +20,5 @@ import { start } from './server';
   });
 
   const services = setupServices({ connectors });
-  start(services);
+  start({ services, port: Config.api.port });
 })();
