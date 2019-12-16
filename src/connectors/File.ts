@@ -1,8 +1,8 @@
 import { Connector, HttpRequest } from '~types';
 import { File } from '~entities/File';
 
-import * as crypto from 'crypto';
-import * as mime from 'mime';
+import crypto from 'crypto';
+import mime from 'mime';
 
 import { Repository } from 'typeorm';
 

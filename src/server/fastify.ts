@@ -1,6 +1,6 @@
-import * as fastify from 'fastify';
-import * as crypto from 'crypto';
-import * as moment from 'moment';
+import fastify from 'fastify';
+import crypto from 'crypto';
+import moment from 'moment';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 
 import { WebServer, MethodDecorator, ClassDecorator } from '~types';
@@ -125,7 +125,7 @@ function constructRoute(
   };
 }
 
-export class FastifyServer {
+export class FastifyServer implements WebServer.Server {
   private prefix: string;
 
   private server: fastify.FastifyInstance<
@@ -180,7 +180,7 @@ export class FastifyServer {
     });
   }
 
-  addController(controller: any, options?: { prefix: string }) {
+  addController(controller: any, options?: Partial<{ prefix: string }>): void {
     const { prefix = '' } = options || {};
 
     const definedController = CONTROLLERS.find(({ cls }) => {
@@ -214,7 +214,7 @@ export class FastifyServer {
     });
   }
 
-  listen(port: number) {
-    this.server.listen(port);
+  listen(port: number, host?: string): void {
+    this.server.listen(port, host);
   }
 }
