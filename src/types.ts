@@ -78,6 +78,11 @@ export namespace WebServer {
     config: RouteConfig;
     propertyKey: string;
   };
+
+  export interface Server {
+    addController(controller: any, options?: Partial<{ prefix: string }>): void;
+    listen(port: number, host?: string): void;
+  }
 }
 
 export interface Streamable {
@@ -86,4 +91,11 @@ export interface Streamable {
   size: number;
   content: Buffer;
   lastModified: Date;
+}
+
+export interface Logger {
+  debug(message?: any, ...optionalParams: any[]): void;
+  info(message?: any, ...optionalParams: any[]): void;
+  warn(message?: any, ...optionalParams: any[]): void;
+  error(message?: any, ...optionalParams: any[]): void;
 }
