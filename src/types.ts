@@ -50,12 +50,12 @@ export type RouteConfig = {
   method: 'get' | 'post' | 'delete' | 'patch' | 'head' | 'option';
   responseType?: 'json' | 'binary';
   url: string;
-  input?: Partial<{
+  requestSchema?: Partial<{
     params: object;
     querystring: object;
     body: object;
   }>;
-  output?: object;
+  responseSchema?: object;
 };
 
 export type ClassDecorator = (constructor: Function) => any;

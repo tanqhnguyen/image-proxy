@@ -13,7 +13,7 @@ export class ImagesController {
   @Route({
     method: 'post',
     url: '/import',
-    input: {
+    requestSchema: {
       body: {
         type: 'object',
         properties: {
@@ -22,7 +22,7 @@ export class ImagesController {
         required: ['url'],
       },
     },
-    output: {
+    responseSchema: {
       type: 'object',
       properties: {
         id: { type: 'string' },
@@ -43,7 +43,7 @@ export class ImagesController {
     method: 'get',
     url: '/:id',
     responseType: 'binary',
-    input: {
+    requestSchema: {
       params: {
         type: 'object',
         properties: {

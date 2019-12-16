@@ -40,14 +40,20 @@ function constructRoute(
 ): fastify.RouteOptions {
   const {
     propertyKey,
-    config: { method, url, input, output, responseType = 'json' },
+    config: {
+      method,
+      url,
+      requestSchema,
+      responseSchema,
+      responseType = 'json',
+    },
   } = route;
 
   return {
     method: method.toUpperCase() as any,
     url: `${prefix}${url}`,
     schema: {
-      ...(input || {}),
+      ...(requestSchema || {}),
       response:
         responseType === 'json'
           ? {
@@ -62,7 +68,7 @@ function constructRoute(
                       params: { type: ['object', 'null'] },
                     },
                   },
-                  data: output || {},
+                  data: responseSchema || {},
                 },
               },
             }
