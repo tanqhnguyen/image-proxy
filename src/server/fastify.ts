@@ -3,28 +3,26 @@ import crypto from 'crypto';
 import moment from 'moment';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 
-import { WebServer, MethodDecorator, ClassDecorator, Streamable } from '~types';
+import {
+  WebServer,
+  MethodDecorator,
+  ClassDecorator,
+  Streamable,
+  ControllerConfig,
+  RouteConfig,
+} from '~types';
 import { NotFoundError } from '~common/errors';
 
-const CONTROLLERS: WebServer.Controller[] = [];
-const ROUTES: WebServer.Route[] = [];
-
-export function Controller(
-  config: WebServer.Controller['config'],
-): ClassDecorator {
+export function Controller(config: ControllerConfig): ClassDecorator {
   return constructor => {
-    CONTROLLERS.push({
-      config,
-      cls: constructor,
-      name: constructor.name,
-    });
+    constructor.controller = config;
   };
 }
 
-export function Route(config: WebServer.Route['config']): MethodDecorator {
+export function Route(config: RouteConfig): MethodDecorator {
   return function(target, propertyKey, descriptor) {
-    ROUTES.push({
-      controllerName: target.constructor.name,
+    target.constructor.routes = target.constructor.routes || [];
+    target.constructor.routes.push({
       config,
       propertyKey,
     });
@@ -60,7 +58,10 @@ export class FastifyServer implements WebServer.Server {
   }
 
   private constructRoute(
-    route: WebServer.Route,
+    route: {
+      propertyKey: string;
+      config: RouteConfig;
+    },
     controller: any,
     prefix: string,
   ): fastify.RouteOptions {
@@ -214,23 +215,17 @@ export class FastifyServer implements WebServer.Server {
   addController(controller: any, options?: Partial<{ prefix: string }>): void {
     const { prefix = '' } = options || {};
 
-    const definedController = CONTROLLERS.find(({ cls }) => {
-      return controller instanceof cls;
-    });
+    const { controller: controllerConfig } = controller.constructor;
 
-    if (!definedController) {
+    if (!controllerConfig) {
       throw new Error('Is the controller decorated with @Controller?');
     }
 
-    const { config } = definedController;
-
-    const routeOptions = ROUTES.filter(
-      route => route.controllerName === definedController.name,
-    ).map(route => {
+    const routeOptions = controller.constructor.routes.map(route => {
       return this.constructRoute(
         route,
         controller,
-        `${this.prefix || ''}${prefix}${config.prefix}`,
+        `${this.prefix || ''}${prefix}${controllerConfig.prefix}`,
       );
     });
 

@@ -59,7 +59,11 @@ export type RouteConfig = {
   responseSchema?: object;
 };
 
-export type ClassDecorator = (constructor: Function) => any;
+export type ControllerConfig = {
+  prefix: string;
+};
+
+export type ClassDecorator = (constructor: any) => any;
 
 export type MethodDecorator = (
   target,
@@ -68,18 +72,6 @@ export type MethodDecorator = (
 ) => PropertyDescriptor;
 
 export namespace WebServer {
-  export type Controller = {
-    config: { prefix: string };
-    cls: Function;
-    name: string;
-  };
-
-  export type Route = {
-    controllerName: string;
-    config: RouteConfig;
-    propertyKey: string;
-  };
-
   export interface Server {
     addController(controller: any, options?: Partial<{ prefix: string }>): void;
     listen(port: number, host?: string): void;
