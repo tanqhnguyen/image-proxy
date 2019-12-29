@@ -48,6 +48,7 @@ export interface HttpRequest {
 
 export type RouteConfig = {
   method: 'get' | 'post' | 'delete' | 'patch' | 'head' | 'option';
+  auth?: WebServer.AuthStrategy[];
   responseType?: 'json' | 'binary';
   url: string;
   requestSchema?: Partial<{
@@ -82,6 +83,10 @@ export namespace WebServer {
   export interface Server {
     addController(controller: any, options?: Partial<{ prefix: string }>): void;
     listen(port: number, host?: string): void;
+  }
+
+  export interface AuthStrategy {
+    verify(requestParams: object, headers: object): Promise<boolean>;
   }
 }
 
