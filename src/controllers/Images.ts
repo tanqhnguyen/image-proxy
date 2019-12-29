@@ -1,6 +1,7 @@
 import { Services, Streamable } from '~types';
 
 import { Route, Controller } from '../server';
+import { SecretKeyStrategy } from '../server/auth/SecretKeyStrategy';
 
 @Controller({ prefix: '/images' })
 export class ImagesController {
@@ -12,6 +13,7 @@ export class ImagesController {
 
   @Route({
     method: 'post',
+    auth: [new SecretKeyStrategy()],
     url: '/import',
     requestSchema: {
       body: {
