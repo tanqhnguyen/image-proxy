@@ -3,33 +3,8 @@ import crypto from 'crypto';
 import moment from 'moment';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 
-import {
-  WebServer,
-  MethodDecorator,
-  ClassDecorator,
-  Streamable,
-  ControllerConfig,
-  RouteConfig,
-} from '~types';
+import { WebServer, Streamable, RouteConfig } from '~types';
 import { NotFoundError } from '~common/errors';
-
-export function Controller(config: ControllerConfig): ClassDecorator {
-  return constructor => {
-    constructor.controller = config;
-  };
-}
-
-export function Route(config: RouteConfig): MethodDecorator {
-  return function(target, propertyKey, descriptor) {
-    target.constructor.routes = target.constructor.routes || [];
-    target.constructor.routes.push({
-      config,
-      propertyKey,
-    });
-
-    return descriptor;
-  };
-}
 
 export class FastifyServer implements WebServer.Server {
   private prefix: string;

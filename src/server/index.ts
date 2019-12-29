@@ -1,8 +1,32 @@
-import { Services, Logger, WebServer } from '~types';
-
-export { Route, Controller } from './fastify';
+import {
+  Services,
+  Logger,
+  WebServer,
+  MethodDecorator,
+  ClassDecorator,
+  ControllerConfig,
+  RouteConfig,
+} from '~types';
 
 import { ImagesController } from '~controllers/Images';
+
+export function Controller(config: ControllerConfig): ClassDecorator {
+  return constructor => {
+    constructor.controller = config;
+  };
+}
+
+export function Route(config: RouteConfig): MethodDecorator {
+  return function(target, propertyKey, descriptor) {
+    target.constructor.routes = target.constructor.routes || [];
+    target.constructor.routes.push({
+      config,
+      propertyKey,
+    });
+
+    return descriptor;
+  };
+}
 
 export class ApiServer {
   private logger: Logger;
