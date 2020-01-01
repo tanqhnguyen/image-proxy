@@ -1,10 +1,13 @@
 import { File as FileEntity } from '~entities/File';
-import { Link as LinkEntity } from '~entities/Link';
+import { AccessToken as AccessTokenEntity } from '~entities/AccessToken';
 
 export type WithoutMetaColumn<T> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>;
 
 export namespace Connector {
-  export type FileUpsertParams = Omit<WithoutMetaColumn<FileEntity>, 'links'>;
+  export type FileUpsertParams = Omit<
+    WithoutMetaColumn<FileEntity>,
+    'accessTokens'
+  >;
   export interface File {
     upsert(file: FileUpsertParams): Promise<FileEntity>;
     getByUrl(url: string): Promise<FileEntity | null>;
@@ -18,18 +21,28 @@ export namespace Connector {
     }>;
   }
 
-  export interface Link {
-    generate(fileId: FileEntity['id'], ttl?: number): Promise<LinkEntity>;
-    getValidByFileId(fileId: FileEntity['id']): Promise<LinkEntity[]>;
-    getByIdWithFile(id: LinkEntity['id']): Promise<LinkEntity | null>;
+  export interface AccessToken {
+    generate(
+      fileId: FileEntity['id'],
+      ttl?: number,
+    ): Promise<AccessTokenEntity>;
+    getValidByFileId(fileId: FileEntity['id']): Promise<AccessTokenEntity[]>;
+    getByIdWithFile(
+      id: AccessTokenEntity['id'],
+    ): Promise<AccessTokenEntity | null>;
   }
 }
 
 export namespace Service {
   export interface Proxy {
     importFromUrlIfNotExists(url: string): Promise<FileEntity | null>;
-    generateNewLinkIfNotAvailable(url: string): Promise<LinkEntity>;
-    getByLinkIdOrThrow(id: LinkEntity['id']): Promise<FileEntity>;
+    generateNewAccessTokenIfNotAvailable(
+      url: string,
+    ): Promise<AccessTokenEntity>;
+    getByFileIdAndAccessTokenOrThrow(
+      fileId: FileEntity['id'],
+      accessToken: AccessTokenEntity['id'],
+    ): Promise<FileEntity>;
   }
 }
 
@@ -39,7 +52,7 @@ export type Services = {
 
 export type Connectors = {
   file: Connector.File;
-  link: Connector.Link;
+  accessToken: Connector.AccessToken;
 };
 
 export interface HttpRequest {

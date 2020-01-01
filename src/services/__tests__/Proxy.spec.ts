@@ -20,7 +20,7 @@ test.before(async () => {
 
   service = new RemoteFileProxy({
     fileConnector: connectors.file,
-    linkConnector: connectors.link,
+    accessTokenConnector: connectors.accessToken,
   });
 
   nock.enableNetConnect('tannguyen.org');
@@ -35,17 +35,17 @@ test('import image from a remote location', async t => {
   t.is(image.mime, 'image/jpeg');
 });
 
-test('return a valid link to the file', async t => {
+test('return a valid token to the file', async t => {
   const url = 'https://tannguyen.org/images/success-kid.jpg';
   const image = await service.importFromUrlIfNotExists(url);
-  const link = await service.generateNewLinkIfNotAvailable(url);
-  t.is(link.file.id, image.id);
+  const token = await service.generateNewAccessTokenIfNotAvailable(url);
+  t.is(token.file.id, image.id);
 });
 
 test('handle invalid file', async t => {
   await t.throwsAsync(
     async () => {
-      await service.generateNewLinkIfNotAvailable('not-exist');
+      await service.generateNewAccessTokenIfNotAvailable('not-exist');
     },
     {
       instanceOf: FileNotFoundError,

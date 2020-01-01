@@ -7,7 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 
-import { Link } from './Link';
+import { AccessToken } from './AccessToken';
 
 @Entity()
 export class File {
@@ -30,10 +30,10 @@ export class File {
   content: Buffer;
 
   @OneToMany(
-    () => Link,
-    link => link.file,
+    () => AccessToken,
+    accessToken => accessToken.file,
   )
-  links: Link[];
+  accessTokens: AccessToken[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

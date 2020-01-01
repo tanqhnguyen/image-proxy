@@ -10,7 +10,7 @@ export function setupServices(params: Params): Services {
   return {
     remoteFile: new RemoteFileProxy({
       fileConnector: connectors.file,
-      linkConnector: connectors.link,
+      accessTokenConnector: connectors.accessToken,
     }),
   };
 }

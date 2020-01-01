@@ -1,10 +1,10 @@
 import { Connection } from 'typeorm';
 
 import { FileConnector } from '~connectors/File';
-import { LinkPgConnector } from '~connectors/Link';
+import { AccessTokenPgConnector } from '~connectors/AccessToken';
 
 import { File } from '~entities/File';
-import { Link } from '~entities/Link';
+import { AccessToken } from '~entities/AccessToken';
 
 import { Connectors, HttpRequest } from '~types';
 
@@ -20,8 +20,8 @@ export function setupConnectors(params: Params): Connectors {
       repository: connection.getRepository(File),
       httpRequest: params.httpRequest,
     }),
-    link: new LinkPgConnector({
-      repository: connection.getRepository(Link),
+    accessToken: new AccessTokenPgConnector({
+      repository: connection.getRepository(AccessToken),
     }),
   };
 }

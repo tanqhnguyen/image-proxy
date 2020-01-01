@@ -46,7 +46,7 @@ test('import image from a remote location', async t => {
       url: 'https://tannguyen.org/images/obi-wan-visible-confusion.jpg',
     },
     headers: {
-      'X-SECRET-KEY': 'z7ZRvQuH5f8hMvCSPtRD7GtP',
+      'x-secret-key': 'z7ZRvQuH5f8hMvCSPtRD7GtP',
     },
   });
 

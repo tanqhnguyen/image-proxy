@@ -1,5 +1,5 @@
 import { Connector } from '~types';
-import { Link } from '~entities/Link';
+import { AccessToken } from '~entities/AccessToken';
 import { File } from '~entities/File';
 
 import * as moment from 'moment';
@@ -7,13 +7,13 @@ import * as moment from 'moment';
 import { Repository, Raw } from 'typeorm';
 
 type Params = {
-  repository: Repository<Link>;
+  repository: Repository<AccessToken>;
 };
 
 const ONE_WEEK_IN_SECONDS = 604800;
 
-export class LinkPgConnector implements Connector.Link {
-  private repository: Repository<Link>;
+export class AccessTokenPgConnector implements Connector.AccessToken {
+  private repository: Repository<AccessToken>;
 
   constructor(params: Params) {
     Object.assign(this, params);
@@ -22,7 +22,7 @@ export class LinkPgConnector implements Connector.Link {
   async generate(
     fileId: File['id'],
     ttl: number = ONE_WEEK_IN_SECONDS,
-  ): Promise<Link> {
+  ): Promise<AccessToken> {
     const file = new File();
     file.id = fileId;
 
@@ -43,7 +43,7 @@ export class LinkPgConnector implements Connector.Link {
     return link;
   }
 
-  async getValidByFileId(fileId: File['id']): Promise<Link[]> {
+  async getValidByFileId(fileId: File['id']): Promise<AccessToken[]> {
     const file = new File();
     file.id = fileId;
 
@@ -60,7 +60,7 @@ export class LinkPgConnector implements Connector.Link {
     return result;
   }
 
-  async getByIdWithFile(id: Link['id']): Promise<Link | null> {
+  async getByIdWithFile(id: AccessToken['id']): Promise<AccessToken | null> {
     return this.repository.findOne(id, { relations: ['file'] });
   }
 }

@@ -2,6 +2,7 @@ import { Services, Streamable } from '~types';
 
 import { Route, Controller } from '../server';
 import { SecretKeyStrategy } from '../server/auth/SecretKeyStrategy';
+import { File } from '~entities/File';
 
 @Controller({ prefix: '/images' })
 export class ImagesController {
@@ -31,13 +32,15 @@ export class ImagesController {
       },
     },
   })
-  async importFromUrl(params: { url: string }): Promise<{ id: string }> {
-    await this.services.remoteFile.importFromUrlIfNotExists(params.url);
-    const link = await this.services.remoteFile.generateNewLinkIfNotAvailable(
+  async importFromUrl(params: { url: string }): Promise<{ id: File['id'] }> {
+    const file = await this.services.remoteFile.importFromUrlIfNotExists(
+      params.url,
+    );
+    await this.services.remoteFile.generateNewAccessTokenIfNotAvailable(
       params.url,
     );
     return {
-      id: link.id,
+      id: file.id,
     };
   }
 
@@ -55,8 +58,15 @@ export class ImagesController {
       },
     },
   })
-  async serveLink(params: { id: string }): Promise<Streamable> {
-    const file = await this.services.remoteFile.getByLinkIdOrThrow(params.id);
+  async serveLink(
+    params: { id: string },
+    headers: object,
+  ): Promise<Streamable> {
+    const accessToken = headers['x-file-access-token'];
+    const file = await this.services.remoteFile.getByFileIdAndAccessTokenOrThrow(
+      params.id,
+      accessToken,
+    );
 
     return {
       fileName: `${params.id}.${file.ext}`,

@@ -1,16 +1,16 @@
 import { Service, Connector } from '~types';
 import { File } from '~entities/File';
-import { Link } from '~entities/Link';
-import { FileNotFoundError, LinkNotFoundError } from '~common/errors';
+import { AccessToken } from '~entities/AccessToken';
+import { FileNotFoundError, AccessTokenNotFoundError } from '~common/errors';
 
 interface Params {
   fileConnector: Connector.File;
-  linkConnector: Connector.Link;
+  accessTokenConnector: Connector.AccessToken;
 }
 
 export class RemoteFileProxy implements Service.Proxy {
   private fileConnector: Params['fileConnector'];
-  private linkConnector: Params['linkConnector'];
+  private accessTokenConnector: Params['accessTokenConnector'];
 
   constructor(params: Params) {
     Object.assign(this, params);
@@ -33,34 +33,42 @@ export class RemoteFileProxy implements Service.Proxy {
     });
   }
 
-  async generateNewLinkIfNotAvailable(url: string): Promise<Link> {
+  async generateNewAccessTokenIfNotAvailable(
+    url: string,
+  ): Promise<AccessToken> {
     const file = await this.fileConnector.getByUrl(url);
     if (!file) {
       throw new FileNotFoundError();
     }
 
-    const links = await this.linkConnector.getValidByFileId(file.id);
-    if (links.length) {
-      const link = links[0];
-      link.file = file;
-      return link;
+    const tokens = await this.accessTokenConnector.getValidByFileId(file.id);
+    if (tokens.length) {
+      const token = tokens[0];
+      token.file = file;
+      return token;
     }
 
-    const generatedLink = await this.linkConnector.generate(file.id);
-    generatedLink.file = file;
-    return generatedLink;
+    const newToken = await this.accessTokenConnector.generate(file.id);
+    newToken.file = file;
+    return newToken;
   }
 
-  async getByLinkIdOrThrow(id: Link['id']): Promise<File> {
-    const link = await this.linkConnector.getByIdWithFile(id);
-    if (!link) {
-      throw new LinkNotFoundError();
+  async getByFileIdAndAccessTokenOrThrow(
+    fileId: File['id'],
+    accessTokenId: AccessToken['id'],
+  ): Promise<File> {
+    const token = await this.accessTokenConnector.getByIdWithFile(
+      accessTokenId,
+    );
+
+    if (!token) {
+      throw new AccessTokenNotFoundError();
     }
 
-    if (!link.file) {
+    if (!token.file || token.file.id !== fileId) {
       throw new FileNotFoundError();
     }
 
-    return link.file;
+    return token.file;
   }
 }

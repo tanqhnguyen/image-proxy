@@ -4,22 +4,22 @@ import * as moment from 'moment';
 
 import { Repository } from 'typeorm';
 import { File } from '~entities/File';
-import { Link } from '~entities/Link';
+import { AccessToken } from '~entities/AccessToken';
 
 import { FileConnector } from '~connectors/File';
-import { LinkPgConnector } from '~connectors/Link';
+import { AccessTokenPgConnector } from '~connectors/AccessToken';
 
 import { setupConnection } from '~test/database';
 import { AxiosHttpRequest } from '~common/HttpRequest';
 
 let imageRepository: Repository<File>;
-let linkRepository: Repository<Link>;
+let accessTokenRepository: Repository<AccessToken>;
 let imageConnector: FileConnector;
 
 test.before(async () => {
   const connection = await setupConnection();
   imageRepository = connection.getRepository(File);
-  linkRepository = connection.getRepository(Link);
+  accessTokenRepository = connection.getRepository(AccessToken);
 
   imageConnector = new FileConnector({
     repository: imageRepository,
@@ -28,8 +28,8 @@ test.before(async () => {
 });
 
 test('insert a new record', async t => {
-  const connector = new LinkPgConnector({
-    repository: linkRepository,
+  const connector = new AccessTokenPgConnector({
+    repository: accessTokenRepository,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -42,15 +42,15 @@ test('insert a new record', async t => {
     content: file,
   });
 
-  const link = await connector.generate(image.id);
-  const savedLink = await linkRepository.findOne(link.id);
+  const token = await connector.generate(image.id);
+  const savedToken = await accessTokenRepository.findOne(token.id);
 
-  t.is(moment.utc(savedLink.expiredAt).diff(moment.utc(), 'days'), 6);
+  t.is(moment.utc(savedToken.expiredAt).diff(moment.utc(), 'days'), 6);
 });
 
-test('get first valid link', async t => {
-  const connector = new LinkPgConnector({
-    repository: linkRepository,
+test('get first valid token', async t => {
+  const connector = new AccessTokenPgConnector({
+    repository: accessTokenRepository,
   });
 
   const file = fs.readFileSync(`${__dirname}/fixtures/sample1.jpg`);
@@ -63,27 +63,27 @@ test('get first valid link', async t => {
     content: file,
   });
 
-  const link1 = await connector.generate(image.id);
-  const link2 = await connector.generate(image.id);
+  const token1 = await connector.generate(image.id);
+  const token2 = await connector.generate(image.id);
 
   const valid1 = await connector.getValidByFileId(image.id);
 
   t.is(valid1.length, 2);
   t.deepEqual(
-    [link2.id, link1.id],
-    valid1.map(link => link.id),
+    [token2.id, token1.id],
+    valid1.map(token => token.id),
   );
 
-  link2.expiredAt = moment
+  token2.expiredAt = moment
     .utc()
     .subtract(7, 'days')
     .toDate();
-  await linkRepository.save(link2);
+  await accessTokenRepository.save(token2);
   const valid2 = await connector.getValidByFileId(image.id);
 
   t.is(valid2.length, 1);
   t.deepEqual(
-    [link1.id],
-    valid2.map(link => link.id),
+    [token1.id],
+    valid2.map(token => token.id),
   );
 });

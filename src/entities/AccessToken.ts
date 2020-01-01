@@ -10,13 +10,13 @@ import {
 import { File } from './File';
 
 @Entity()
-export class Link {
+export class AccessToken {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(
     () => File,
-    file => file.links,
+    file => file.accessTokens,
   )
   file: File;
 

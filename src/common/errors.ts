@@ -9,9 +9,9 @@ export class FileNotFoundError extends ApplicationError {
   }
 }
 
-export class LinkNotFoundError extends ApplicationError {
+export class AccessTokenNotFoundError extends ApplicationError {
   constructor() {
-    super(ErrorMessage.LINK_NOT_FOUND);
+    super(ErrorMessage.ACCESS_TOKEN_NOT_FOUND);
   }
 }
 
@@ -24,6 +24,6 @@ export class NotFoundError extends ApplicationError {
 
 export enum ErrorMessage {
   FILE_NOT_FOUND = 'File not found',
-  LINK_NOT_FOUND = 'Link not found',
+  ACCESS_TOKEN_NOT_FOUND = 'Link not found',
   NOT_FOUND = 'Not found',
 }
