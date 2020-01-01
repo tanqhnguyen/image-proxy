@@ -79,4 +79,24 @@ export class RemoteFileProxy implements Service.Proxy {
 
     return token.file;
   }
+
+  async renewAccessToken(
+    accessToken: AccessToken['id'],
+  ): Promise<AccessToken | null> {
+    const newExpirationDate = moment
+      .utc()
+      .add(1, 'week')
+      .toDate();
+
+    const success = await this.accessTokenConnector.setExpirationDateById(
+      accessToken,
+      newExpirationDate,
+    );
+
+    if (!success) {
+      return null;
+    }
+
+    return this.accessTokenConnector.getById(accessToken);
+  }
 }

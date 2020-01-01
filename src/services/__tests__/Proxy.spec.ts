@@ -80,4 +80,11 @@ test('get image by id and access token', async t => {
     },
     { instanceOf: FileNotFoundError },
   );
+
+  await service.renewAccessToken(token.id);
+  const validAgainImage = await service.getByFileIdAndAccessTokenOrThrow(
+    image.id,
+    token.id,
+  );
+  t.is(validAgainImage.id, image.id);
 });

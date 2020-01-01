@@ -60,6 +60,10 @@ export class AccessTokenPgConnector implements Connector.AccessToken {
     return result;
   }
 
+  async getById(id: AccessToken['id']): Promise<AccessToken | null> {
+    return this.repository.findOne(id);
+  }
+
   async getByIdWithFile(id: AccessToken['id']): Promise<AccessToken | null> {
     return this.repository.findOne(id, { relations: ['file'] });
   }
