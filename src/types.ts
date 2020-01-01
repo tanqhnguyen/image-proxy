@@ -30,6 +30,10 @@ export namespace Connector {
     getByIdWithFile(
       id: AccessTokenEntity['id'],
     ): Promise<AccessTokenEntity | null>;
+    setExpirationDateById(
+      id: AccessTokenEntity['id'],
+      date: Date,
+    ): Promise<boolean>;
   }
 }
 

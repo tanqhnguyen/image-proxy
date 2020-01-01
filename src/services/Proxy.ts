@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import { Service, Connector } from '~types';
 import { File } from '~entities/File';
 import { AccessToken } from '~entities/AccessToken';
@@ -66,6 +67,13 @@ export class RemoteFileProxy implements Service.Proxy {
     }
 
     if (!token.file || token.file.id !== fileId) {
+      throw new FileNotFoundError();
+    }
+
+    const expiredAt = moment.utc(token.expiredAt);
+    const now = moment.utc();
+
+    if (expiredAt.diff(now, 'second') <= 0) {
       throw new FileNotFoundError();
     }
 

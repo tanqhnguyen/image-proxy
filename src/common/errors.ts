@@ -4,6 +4,7 @@ export class ApplicationError extends Error {
 }
 
 export class FileNotFoundError extends ApplicationError {
+  statusCode = 404;
   constructor() {
     super(ErrorMessage.FILE_NOT_FOUND);
   }

@@ -1,5 +1,6 @@
 import test from 'ava';
 import * as nock from 'nock';
+import * as moment from 'moment';
 
 import { RemoteFileProxy } from '~services/Proxy';
 import { setupConnectors } from '~connectors/index';
@@ -51,5 +52,32 @@ test('handle invalid file', async t => {
       instanceOf: FileNotFoundError,
       message: ErrorMessage.FILE_NOT_FOUND,
     },
+  );
+});
+
+test('get image by id and access token', async t => {
+  const url = 'https://tannguyen.org/images/success-kid.jpg';
+  const image = await service.importFromUrlIfNotExists(url);
+  const token = await service.generateNewAccessTokenIfNotAvailable(url);
+
+  const validImage = await service.getByFileIdAndAccessTokenOrThrow(
+    image.id,
+    token.id,
+  );
+  t.is(validImage.id, image.id);
+
+  await connectors.accessToken.setExpirationDateById(
+    token.id,
+    moment
+      .utc()
+      .subtract(1, 'day')
+      .toDate(),
+  );
+
+  await t.throwsAsync(
+    async () => {
+      await service.getByFileIdAndAccessTokenOrThrow(image.id, token.id);
+    },
+    { instanceOf: FileNotFoundError },
   );
 });

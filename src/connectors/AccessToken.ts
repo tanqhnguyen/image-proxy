@@ -63,4 +63,16 @@ export class AccessTokenPgConnector implements Connector.AccessToken {
   async getByIdWithFile(id: AccessToken['id']): Promise<AccessToken | null> {
     return this.repository.findOne(id, { relations: ['file'] });
   }
+
+  async setExpirationDateById(
+    id: AccessToken['id'],
+    date: Date,
+  ): Promise<boolean> {
+    const updateResult = await this.repository.update(
+      { id },
+      { expiredAt: date },
+    );
+
+    return updateResult.affected === 1;
+  }
 }
