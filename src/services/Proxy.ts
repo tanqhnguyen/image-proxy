@@ -63,7 +63,7 @@ export class RemoteFileProxy implements Service.Proxy {
     );
 
     if (!token) {
-      throw new AccessTokenNotFoundError();
+      throw new FileNotFoundError();
     }
 
     if (!token.file || token.file.id !== fileId) {

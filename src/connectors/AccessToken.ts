@@ -61,11 +61,19 @@ export class AccessTokenPgConnector implements Connector.AccessToken {
   }
 
   async getById(id: AccessToken['id']): Promise<AccessToken | null> {
-    return this.repository.findOne(id);
+    try {
+      return await this.repository.findOne(id);
+    } catch (e) {
+      return null;
+    }
   }
 
   async getByIdWithFile(id: AccessToken['id']): Promise<AccessToken | null> {
-    return this.repository.findOne(id, { relations: ['file'] });
+    try {
+      return await this.repository.findOne(id, { relations: ['file'] });
+    } catch (e) {
+      return null;
+    }
   }
 
   async setExpirationDateById(

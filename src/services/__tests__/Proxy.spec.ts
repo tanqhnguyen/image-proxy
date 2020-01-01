@@ -60,6 +60,13 @@ test('get image by id and access token', async t => {
   const image = await service.importFromUrlIfNotExists(url);
   const token = await service.generateNewAccessTokenIfNotAvailable(url);
 
+  await t.throwsAsync(
+    async () => {
+      await service.getByFileIdAndAccessTokenOrThrow(image.id, 'invalid-token');
+    },
+    { instanceOf: FileNotFoundError },
+  );
+
   const validImage = await service.getByFileIdAndAccessTokenOrThrow(
     image.id,
     token.id,
