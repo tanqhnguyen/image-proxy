@@ -58,9 +58,9 @@ export class RemoteFileProxy implements Service.Proxy {
     fileId: File['id'],
     accessTokenId: AccessToken['id'],
   ): Promise<File> {
-    const token = await this.accessTokenConnector.getByIdWithFile(
-      accessTokenId,
-    );
+    const token = await this.accessTokenConnector.getById(accessTokenId, [
+      'file',
+    ]);
 
     if (!token) {
       throw new FileNotFoundError();

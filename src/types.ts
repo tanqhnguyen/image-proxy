@@ -27,10 +27,10 @@ export namespace Connector {
       ttl?: number,
     ): Promise<AccessTokenEntity>;
     getValidByFileId(fileId: FileEntity['id']): Promise<AccessTokenEntity[]>;
-    getByIdWithFile(
+    getById(
       id: AccessTokenEntity['id'],
+      relations?: Array<'file'>,
     ): Promise<AccessTokenEntity | null>;
-    getById(id: AccessTokenEntity['id']): Promise<AccessTokenEntity | null>;
     setExpirationDateById(
       id: AccessTokenEntity['id'],
       date: Date,
